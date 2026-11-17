@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import event_card, ticket_stub, status_badge with context %}
+
+{% block title %}Style guide — SmartTicket{% endblock %}
+{% block description %}Design tokens and interface components for the SmartTicket frontend.{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/styleguide.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="sg-hero">
+  <div class="container">
+    <p class="eyebrow">Design system · v0.1</p>
+    <h1>Less interface. More event.</h1>
+    <p>
+      Tokens, type, and components used across SmartTicket. Paper and ink first,
+      one signal accent, borders instead of shadows. Every state below is real
+      markup, not a mockup.
+    </p>
+    <div class="sg-stack" style="margin-top: 1.25rem;">
+      <a class="btn btn--primary" href="/">
+        {{ icon("arrow-left") }}
+        Back to the site
+      </a>
+      <span class="demo-note">Demo fixtures active</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">01</span>
+      <div>
+        <h2>Color</h2>
+        <p>Warm paper, near-black ink, and a single vermilion signal. Semantic colors stay muted.</p>
+      </div>
+    </div>
+
+    <div class="sg-swatches">
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--paper)"></div>
+        <div class="sg-swatch__meta"><strong>Paper</strong><code>--paper</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--ink)"></div>
+        <div class="sg-swatch__meta"><strong>Ink</strong><code>--ink</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--accent)"></div>
+        <div class="sg-swatch__meta"><strong>Accent</strong><code>--accent</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--green)"></div>
+        <div class="sg-swatch__meta"><strong>Green</strong><code>--green</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--amber)"></div>
+        <div class="sg-swatch__meta"><strong>Amber</strong><code>--amber</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--blue)"></div>
+        <div class="sg-swatch__meta"><strong>Blue</strong><code>--blue</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--paper-sunken)"></div>
+        <div class="sg-swatch__meta"><strong>Sunken</strong><code>--paper-sunken</code></div>
+      </div>
+      <div class="sg-swatch">
+        <div class="sg-swatch__color" style="--swatch: var(--danger)"></div>
+        <div class="sg-swatch__meta"><strong>Danger</strong><code>--danger</code></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">02</span>
+      <div>
+        <h2>Typography</h2>
+        <p>Instrument Serif for display and editorial rhythm; Instrument Sans for everything functional.</p>
+      </div>
+    </div>
+
+    <div class="sg-type">
+      <div class="sg-type__row">
+        <span class="sg-type__meta">Display / serif 400</span>
+        <div>
+          <p class="sg-display">One pass. One face. One entry.</p>
+          <p class="sg-small">.display / clamp 3.2–6.2rem / line-height 0.96</p>
+        </div>
+      </div>
+
+      <div class="sg-type__row">
+        <span class="sg-type__meta">Heading / serif 400</span>
+        <div>
+          <p class="sg-h2">Three checks before the gate opens.</p>
+          <p class="sg-small">.section-head h2 / clamp 2.1–3.25rem</p>
+        </div>
+      </div>
+
+      <div class="sg-type__row">
+        <span class="sg-type__meta">Body / sans 400</span>
+        <div>
+          <p class="sg-body">
+            The browser captures a frame; the pipeline runs behind the API.
+            Enrolled features are labeled, stored privately, and used only to
+            verify the ticket in front of the operator.
+          </p>
+          <p class="sg-small">body / 0.95–1.03rem / line-height 1.55 / max 62ch</p>
+        </div>
+      </div>
+
+      <div class="sg-type__row">
+        <span class="sg-type__meta">Small / sans 500</span>
+        <div>
+          <p class="sg-small">Doors open an hour before the first set. Re-entry is not permitted.</p>
+          <p class="sg-small">--step--1 / 0.79–0.86rem</p>
+        </div>
+      </div>
+
+      <div class="sg-type__row">
+        <span class="sg-type__meta">Mono / 0.78rem</span>
+        <div>
+          <p class="sg-mono">HOG · 128×128 · 8,100 dims · τ 0.650</p>
+          <p class="sg-small">.mono / tabular numerals for codes and metrics</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">03</span>
+      <div>
+        <h2>Buttons</h2>
+        <p>One primary action per surface. Outline and ghost carry the rest.</p>
+      </div>
+    </div>
+
+    <div class="sg-grid">
+      <div class="sg-panel">
+        <span class="sg-panel__label">Variants</span>
+        <div class="sg-stack">
+          <button class="btn btn--primary" type="button">Primary</button>
+          <button class="btn btn--accent" type="button">Accent</button>
+          <button class="btn btn--outline" type="button">Outline</button>
+          <button class="btn btn--ghost" type="button">Ghost</button>
+          <button class="btn btn--primary" type="button" disabled>Disabled</button>
+        </div>
+      </div>
+
+      <div class="sg-panel">
+        <span class="sg-panel__label">Sizes and icon</span>
+        <div class="sg-stack">
+          <button class="btn btn--primary btn--sm" type="button">Small</button>
+          <button class="btn btn--primary" type="button">Default</button>
+          <button class="btn btn--primary btn--lg" type="button">Large</button>
+          <button class="btn btn--outline" type="button">
+            {{ icon("scan-face") }}
+            With icon
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">04</span>
+      <div>
+        <h2>Forms</h2>
+        <p>Labels above inputs, hints below, errors attached to the field. No floating labels.</p>
+      </div>
+    </div>
+
+    <div class="sg-grid">
+      <div class="sg-panel">
+        <div class="field">
+          <label class="label" for="sg-name">Full name</label>
+          <input class="input" id="sg-name" type="text" placeholder="Alya Prameswari">
+          <span class="hint">Use the name printed on your ID.</span>
+        </div>
+
+        <div class="field">
+          <label class="label" for="sg-email">Email address</label>
+          <input class="input" id="sg-email" type="email" placeholder="you@example.com">
+        </div>
+
+        <div class="field">
+          <label class="label" for="sg-event">Event</label>
+          <select class="select" id="sg-event">
+            {% for event in events %}
+              <option>{{ event.title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="sg-note">Note</label>
+          <textarea class="textarea" id="sg-note" placeholder="Accessibility requirements, questions, or anything the organiser should know."></textarea>
+        </div>
+
+        <label class="check" for="sg-consent" style="margin-top: 1rem;">
+          <input id="sg-consent" type="checkbox">
+          <span>I consent to facial verification for the events I register for.</span>
+        </label>
+      </div>
+
+      <div class="sg-panel">
+        <span class="sg-panel__label">Error and helper states</span>
+
+        <div class="field">
+          <label class="label" for="sg-email-error">Email address</label>
+          <input class="input" id="sg-email-error" type="email" value="alya@" aria-invalid="true">
+          <span class="field-error">Enter a complete email address.</span>
+        </div>
+
+        <div class="field">
+          <label class="label" for="sg-disabled">Ticket token</label>
+          <input class="input" id="sg-disabled" type="text" value="ST-2026-4F8K-91QD" disabled>
+          <span class="hint">Read-only values use the same field shell.</span>
+        </div>
+
+        <div class="alert alert--info" style="margin-top: 1rem;">
+          {{ icon("info") }}
+          <span>Nine samples are required before a pass can be issued.</span>
+        </div>
+
+        <div class="alert alert--warning" style="margin-top: 0.75rem;">
+          {{ icon("alert-triangle") }}
+          <span>This page uses demo data while the backend is under construction.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">05</span>
+      <div>
+        <h2>Status and tags</h2>
+        <p>Status is text first, color second. The dot only appears on state badges.</p>
+      </div>
+    </div>
+
+    <div class="sg-panel">
+      <div class="sg-stack">
+        <span class="badge">Neutral</span>
+        <span class="badge badge--success">Granted</span>
+        <span class="badge badge--danger">Denied</span>
+        <span class="badge badge--warning">Selling fast</span>
+        <span class="badge badge--info">Pending</span>
+        <span class="badge badge--accent">Active</span>
+        <span class="badge badge--plain">Plain</span>
+        <span class="tag">Concert</span>
+        <span class="tag">Festival</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">06</span>
+      <div>
+        <h2>Event cards</h2>
+        <p>Typographic covers, no stock photography. The accent is data-driven per event.</p>
+      </div>
+    </div>
+
+    <div class="sg-grid">
+      {% for event in events %}
+        {{ event_card(event) }}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">07</span>
+      <div>
+        <h2>Ticket stub</h2>
+        <p>The perforation is two cut-outs, not a background image. The QR is a real encode of a demo token.</p>
+      </div>
+    </div>
+
+    <div class="sg-ticket">
+      {{ ticket_stub(events[0]) }}
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">08</span>
+      <div>
+        <h2>Scanner frame</h2>
+        <p>Camera surfaces use a dark frame, corner brackets, and a single instruction line.</p>
+      </div>
+    </div>
+
+    <div class="sg-grid">
+      <div class="sg-scan">
+        <div class="scan-frame">
+          <span class="scan-frame__corner scan-frame__corner--tl"></span>
+          <span class="scan-frame__corner scan-frame__corner--tr"></span>
+          <span class="scan-frame__corner scan-frame__corner--bl"></span>
+          <span class="scan-frame__corner scan-frame__corner--br"></span>
+          <span class="scan-frame__label">
+            {{ icon("scan-face") }}
+            <span>Align your face inside the guide</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="sg-panel">
+        <span class="sg-panel__label">Scan states</span>
+        <div class="sg-stack" style="margin-bottom: 1rem;">
+          {{ status_badge("GRANTED") }}
+          {{ status_badge("DENIED") }}
+          {{ status_badge("PENDING") }}
+        </div>
+        <p class="sg-small">
+          Verdict screens are full-bleed and use the same status vocabulary.
+          No confetti, no sound effect: the operator can read the result from
+          two metres away.
+        </p>
+        <div class="progress" style="margin-top: 1rem;">
+          <span class="progress__bar" style="--value: 62%"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">09</span>
+      <div>
+        <h2>Data table</h2>
+        <p>Dense information, quiet rules, tabular numerals for anything that can be compared.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Participant</th>
+            <th scope="col">Event</th>
+            <th scope="col">Result</th>
+            <th scope="col">Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td class="numeric">{{ log.created_at|time }}:{{ "%02d"|format(log.created_at.second) }}</td>
+              <td>{{ log.participant }}</td>
+              <td>{{ log.event_title }}</td>
+              <td>{{ status_badge(log.result) }}</td>
+              <td>{{ log.reason }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">10</span>
+      <div>
+        <h2>Empty states</h2>
+        <p>Say what happened and what to do next. Never leave a blank panel.</p>
+      </div>
+    </div>
+
+    <div class="sg-grid">
+      <div class="empty-state">
+        {{ icon("ticket") }}
+        <h3>No passes yet</h3>
+        <p>Register for an event and complete enrollment to receive your first ticket.</p>
+      </div>
+
+      <div class="sg-panel">
+        <span class="sg-panel__label">Inline feedback</span>
+        <div class="alert alert--success">
+          {{ icon("check") }}
+          <span>Face enrollment complete. Nine descriptors stored.</span>
+        </div>
+        <div class="alert alert--danger" style="margin-top: 0.75rem;">
+          {{ icon("x") }}
+          <span>Face distance above threshold. Ticket remains active.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">11</span>
+      <div>
+        <h2>Icons</h2>
+        <p>A single local sprite, 1.6px stroke, no filled or decorative glyphs.</p>
+      </div>
+    </div>
+
+    {% set icon_names = [
+      "ticket", "calendar", "map-pin", "arrow-right", "arrow-left",
+      "arrow-up-right", "scan-face", "camera", "shield-check", "check",
+      "x", "menu", "download", "user", "plus", "search",
+      "chevron-down", "chevron-right", "refresh", "lock", "mail",
+      "clock", "users", "activity", "qr-code", "eye", "trash",
+      "settings", "external-link", "alert-triangle", "info", "id-card"
+    ] %}
+
+    <div class="sg-icons">
+      {% for name in icon_names %}
+        <div class="sg-icon">
+          {{ icon(name) }}
+          <span>{{ name }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="sg-note">
+      {{ icon("info") }}
+      <span>
+        All page data is served from <code>app/mock/repository.py</code>.
+        When the backend lands, swap the repository dependency and these
+        templates keep working.
+      </span>
+    </div>
+  </section>
+</div>
+{% endblock %}

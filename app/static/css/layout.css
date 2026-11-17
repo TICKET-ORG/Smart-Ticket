@@ -1,0 +1,336 @@
+/* ------------------------------------------------------------------
+   Application shell: header, mobile navigation, page headers, footer
+   ------------------------------------------------------------------ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  min-height: var(--header-h);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: var(--ink);
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--white);
+}
+
+.brand__mark .icon {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.75;
+}
+
+.brand__name {
+  line-height: 1;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.site-nav a {
+  color: var(--ink-2);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  color: var(--accent);
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+}
+
+.nav-toggle:hover {
+  border-color: var(--ink);
+}
+
+.nav-toggle .icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.nav-toggle__close {
+  display: none;
+}
+
+.site-header[data-nav-open="true"] .nav-toggle__open {
+  display: none;
+}
+
+.site-header[data-nav-open="true"] .nav-toggle__close {
+  display: block;
+}
+
+/* Inner page header ------------------------------------------------ */
+
+.page-head {
+  padding-block: clamp(2.25rem, 5vw, 3.5rem) clamp(1.5rem, 3vw, 2.25rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.page-head h1 {
+  font-family: var(--font-serif);
+  font-size: var(--step-5);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.page-head p {
+  max-width: 54ch;
+  margin-top: var(--space-sm);
+  color: var(--muted);
+  font-size: var(--step-1);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--space-md);
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--accent);
+}
+
+/* Error page ------------------------------------------------------- */
+
+.error-page {
+  display: grid;
+  align-items: center;
+  min-height: 58vh;
+  padding-block: clamp(3rem, 8vw, 7rem);
+}
+
+.error-page h1 {
+  max-width: 16ch;
+  margin-top: var(--space-md);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+}
+
+.error-page p {
+  max-width: 48ch;
+  margin-top: var(--space-md);
+  color: var(--muted);
+  font-size: var(--step-1);
+}
+
+.error-page .cluster {
+  margin-top: var(--space-xl);
+}
+
+/* Footer ----------------------------------------------------------- */
+
+.site-footer {
+  margin-top: clamp(4rem, 8vw, 7rem);
+  background: var(--ink);
+  color: #c9c2b5;
+}
+
+.site-footer a {
+  color: #e4ded2;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--white);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+}
+
+.site-footer .icon {
+  color: #a49c8d;
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr 1fr;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.footer__lead {
+  max-width: 22ch;
+  margin-top: var(--space-md);
+  color: var(--paper);
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+.footer__note {
+  max-width: 34ch;
+  margin-top: var(--space-md);
+  color: #918a7d;
+  font-size: var(--step--1);
+}
+
+.footer__col h3 {
+  margin-bottom: var(--space-sm);
+  color: #8f887a;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer__col ul {
+  display: grid;
+  gap: 0.55rem;
+  font-size: 0.86rem;
+}
+
+.footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--paper);
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.footer__brand:hover {
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-block: 1.25rem 2rem;
+  border-top: 1px solid rgb(246 243 236 / 12%);
+  color: #837c6f;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.footer__bottom .mono {
+  letter-spacing: 0.06em;
+}
+
+/* Responsive ------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .site-header__inner {
+    gap: var(--space-md);
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .site-nav {
+    display: none;
+  }
+
+  .site-header[data-nav-open="true"] .site-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 0.5rem 1.25rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .site-header[data-nav-open="true"] .site-nav a {
+    width: 100%;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+  }
+
+  .footer__top {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer__brand-col {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header__actions .btn {
+    display: none;
+  }
+
+  .site-header__actions .nav-toggle {
+    display: inline-flex;
+  }
+
+  .footer__top {
+    grid-template-columns: 1fr;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

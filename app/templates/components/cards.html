@@ -1,0 +1,107 @@
+{% from "components/icons.html" import icon with context %}
+
+{% macro event_card(event) -%}
+<article class="event-card">
+  <a
+    class="event-card__cover"
+    href="{{ event.url }}"
+    style="--cover: {{ event.accent }}"
+    data-initial="{{ event.initial }}"
+    aria-label="View {{ event.title }}"
+  >
+    <span class="event-card__top">
+      <span class="event-card__category">{{ event.category }}</span>
+      <span class="badge event-card__status">{{ event.status }}</span>
+    </span>
+    <span class="event-card__title">{{ event.title }}</span>
+    <span class="event-card__date">
+      <span>{{ event.date_short }} · {{ event.time_short }}</span>
+      <span>{{ event.city }}</span>
+    </span>
+  </a>
+
+  <div class="event-card__body">
+    <div class="meta-row">
+      {{ icon("map-pin") }}
+      <span>{{ event.location }}, {{ event.city }}</span>
+    </div>
+
+    <div class="capacity">
+      <div class="capacity__meta">
+        <span><strong>{{ event.registered_count }}</strong> / {{ event.capacity }} registered</span>
+        {% if event.is_sold_out %}
+          <span>Sold out</span>
+        {% else %}
+          <span>{{ event.spots_left }} left</span>
+        {% endif %}
+      </div>
+      <div class="capacity__bar">
+        <span class="capacity__fill" style="--value: {{ event.capacity_pct }}%"></span>
+      </div>
+    </div>
+
+    <a class="event-card__link" href="{{ event.url }}">
+      <span>View event</span>
+      {{ icon("arrow-right") }}
+    </a>
+  </div>
+</article>
+{%- endmacro %}
+
+
+{% macro ticket_stub(event, meta_label="Sample pass") -%}
+<article class="ticket-stub" aria-label="{{ meta_label }}">
+  <div class="ticket-stub__main">
+    <div class="ticket-stub__top">
+      <span>Admit one</span>
+      <span>ST · 2026</span>
+    </div>
+
+    <p class="ticket-stub__event">{{ event.title }}</p>
+
+    <dl class="ticket-stub__meta">
+      <div>
+        <dt>Date</dt>
+        <dd>{{ event.date_short }}</dd>
+      </div>
+      <div>
+        <dt>Doors</dt>
+        <dd>{{ event.time_short }}</dd>
+      </div>
+      <div>
+        <dt>Venue</dt>
+        <dd>{{ event.location }}</dd>
+      </div>
+      <div>
+        <dt>Pass</dt>
+        <dd>General admission</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="ticket-stub__stub">
+    <img
+      class="ticket-stub__qr"
+      src="{{ url_for('static', path='/images/qr-demo.svg') }}"
+      alt="Demo ticket QR code"
+      width="74"
+      height="74"
+    >
+    <span class="ticket-stub__vertical">Scan at turnstile</span>
+  </div>
+</article>
+{%- endmacro %}
+
+
+{% macro status_badge(status) -%}
+  {% set normalized = status|upper %}
+  {% if normalized == "GRANTED" or normalized == "ACTIVE" or normalized == "COMPLETED" %}
+    <span class="badge badge--success">{{ status }}</span>
+  {% elif normalized == "DENIED" or normalized == "USED" or normalized == "CANCELLED" %}
+    <span class="badge badge--danger">{{ status }}</span>
+  {% elif normalized == "PENDING" or normalized == "SELLING FAST" %}
+    <span class="badge badge--warning">{{ status }}</span>
+  {% else %}
+    <span class="badge">{{ status }}</span>
+  {% endif %}
+{%- endmacro %}
