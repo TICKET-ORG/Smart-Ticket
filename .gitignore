@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Databases and local data
+*.db
+*.sqlite
+*.sqlite3
+storage/private_faces/*
+!storage/private_faces/.gitkeep
+storage/features/*
+!storage/features/.gitkeep
+storage/model_artifacts/*
+!storage/model_artifacts/.gitkeep
+
+# Editor and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
