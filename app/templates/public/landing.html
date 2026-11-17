@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import event_card, ticket_stub with context %}
+
+{% block title %}SmartTicket — One pass. One face. One entry.{% endblock %}
+{% block description %}SmartTicket pairs a single-use QR pass with on-site facial verification for event entry. Built on HOG, K-NN, and PSO.{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+{% set ticket_event = hero_event %}
+
+<section class="hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow">Two-stage venue access</p>
+        <h1 class="hero__title">Your face is the <em>ticket.</em></h1>
+        <p class="hero__lede">
+          A single-use QR pass, checked against the person holding it.
+          SmartTicket verifies the token, then your face — on site, in seconds.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" href="#events">
+            Browse events
+            {{ icon("arrow-right") }}
+          </a>
+          <a class="btn btn--outline btn--lg" href="#how-it-works">
+            How entry works
+          </a>
+        </div>
+
+        <ul class="hero__facts">
+          <li class="hero__fact">
+            <span class="hero__fact-value">8,100</span>
+            <span class="hero__fact-label">HOG features</span>
+          </li>
+          <li class="hero__fact">
+            <span class="hero__fact-value">128×128</span>
+            <span class="hero__fact-label">Normalized face</span>
+          </li>
+          <li class="hero__fact">
+            <span class="hero__fact-value">3 min</span>
+            <span class="hero__fact-label">Verification window</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="hero__art">
+        {{ ticket_stub(ticket_event) }}
+        <div class="hero__art-caption">
+          <div>
+            <strong>Every pass is bound to one face.</strong>
+            SHA-256 token · single use
+          </div>
+          <span class="mono">DEMO PASS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-label="System capabilities">
+  <div class="ticker__track">
+    <div class="ticker__group">
+      <span>Face-verified entry</span>
+      <span>Single-use QR</span>
+      <span>HOG 128×128</span>
+      <span>K-NN matching</span>
+      <span>PSO threshold</span>
+      <span>Privacy-first biometrics</span>
+    </div>
+    <div class="ticker__group" aria-hidden="true">
+      <span>Face-verified entry</span>
+      <span>Single-use QR</span>
+      <span>HOG 128×128</span>
+      <span>K-NN matching</span>
+      <span>PSO threshold</span>
+      <span>Privacy-first biometrics</span>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="events">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head__copy">
+        <p class="eyebrow">Events</p>
+        <h2>What's coming up.</h2>
+        <p>
+          Three entries from the calendar. Every pass goes through the same
+          gate check: token first, then face.
+        </p>
+      </div>
+      <span class="section-head__aside">03 / 06 events</span>
+    </div>
+
+    <div class="event-grid">
+      {% for event in events %}
+        {{ event_card(event) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight" id="how-it-works">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-head__copy">
+        <p class="eyebrow">How entry works</p>
+        <h2>Three checks before the gate opens.</h2>
+      </div>
+    </div>
+
+    <div class="steps">
+      <article class="step">
+        <span class="step__num">01</span>
+        <h3>Enroll once</h3>
+        <p>
+          Choose an event, then capture nine guided face samples. Descriptors
+          are extracted on the server — never in the browser.
+        </p>
+      </article>
+
+      <article class="step">
+        <span class="step__num">02</span>
+        <h3>Scan the pass</h3>
+        <p>
+          At the gate, the operator scans your QR. A short verification session
+          opens against that exact ticket, not a shared queue.
+        </p>
+      </article>
+
+      <article class="step">
+        <span class="step__num">03</span>
+        <h3>Face, then entry</h3>
+        <p>
+          The live frame is matched against your enrolled features. A valid
+          match consumes the pass in one atomic update.
+        </p>
+      </article>
+    </div>
+
+    <div class="steps-note">
+      <span><strong>Stage 1</strong> · QR token (SHA-256)</span>
+      <span><strong>Stage 2</strong> · Biometric match (HOG + K-NN)</span>
+      <span><strong>On failure</strong> · ticket stays active</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight" id="method">
+  <div class="container">
+    <div class="method">
+      <div class="method__copy">
+        <p class="eyebrow">Under the hood</p>
+        <h2>A classical pipeline you can inspect.</h2>
+        <p>
+          Not a black-box cloud API. Faces are normalized, described with
+          histogram-of-oriented-gradients, and classified with a distance-based
+          K-NN model tuned by particle swarm optimization.
+        </p>
+        <span class="method__source">
+          Methodology follows the JESSI 2026 reference on HOG, K-NN, and PSO.
+          Rejection thresholds are calibrated per deployment, not copied from
+          the paper.
+        </span>
+      </div>
+
+      <div class="method__stats">
+        <div class="method__stat">
+          <span class="method__stat-value">8,100</span>
+          <span class="method__stat-label">HOG descriptor dimensions</span>
+        </div>
+        <div class="method__stat">
+          <span class="method__stat-value">128²</span>
+          <span class="method__stat-label">Grayscale input size</span>
+        </div>
+        <div class="method__stat">
+          <span class="method__stat-value">9</span>
+          <span class="method__stat-label">Gradient orientation bins</span>
+        </div>
+        <div class="method__stat">
+          <span class="method__stat-value">3 min</span>
+          <span class="method__stat-label">Per-ticket verification window</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="privacy">
+  <div class="container">
+    <div class="privacy">
+      <div>
+        <p class="eyebrow">Biometrics, handled carefully</p>
+        <h2>The face check happens on the server.</h2>
+        <p>
+          The browser captures a frame; the pipeline runs behind the API.
+          Enrolled features are labeled, stored privately, and used only to
+          verify the ticket in front of the operator.
+        </p>
+
+        <ul class="list-check">
+          <li>{{ icon("check") }}<span>Consent is captured before the first sample.</span></li>
+          <li>{{ icon("check") }}<span>Verification compares against the ticket owner, not the whole gallery.</span></li>
+          <li>{{ icon("check") }}<span>A failed match never consumes the pass.</span></li>
+          <li>{{ icon("check") }}<span>Deletion requests are explicit and auditable.</span></li>
+        </ul>
+      </div>
+
+      <div class="privacy__art">
+        <div class="scan-frame">
+          <span class="scan-frame__corner scan-frame__corner--tl"></span>
+          <span class="scan-frame__corner scan-frame__corner--tr"></span>
+          <span class="scan-frame__corner scan-frame__corner--bl"></span>
+          <span class="scan-frame__corner scan-frame__corner--br"></span>
+          <span class="scan-frame__label">
+            {{ icon("scan-face") }}
+            <span>Stage 02 · live face check</span>
+          </span>
+        </div>
+        <div class="privacy__caption">
+          <span>Operator console preview</span>
+          <span>Camera off until session</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="cta-band">
+      <div>
+        <p class="eyebrow">Next step</p>
+        <h2>Find a night. We'll handle the door.</h2>
+        <p>
+          Browse the calendar, pick a pass, and enroll once. The same face
+          unlocks every event you register for.
+        </p>
+      </div>
+      <div class="cta-band__actions">
+        <a class="btn btn--primary btn--lg" href="#events">
+          Browse events
+          {{ icon("arrow-right") }}
+        </a>
+        <a class="btn btn--outline btn--lg" href="#how-it-works">
+          See the flow
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
