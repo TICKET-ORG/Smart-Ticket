@@ -1,0 +1,51 @@
+{% from "components/icons.html" import icon with context %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand-col">
+        <a class="footer__brand" href="/">
+          <span class="brand__mark">{{ icon("ticket") }}</span>
+          <span>smartticket</span>
+        </a>
+        <p class="footer__lead">One pass. One face. One entry.</p>
+        <p class="footer__note">
+          A two-stage access system for events: a single-use QR token and an
+          on-site facial match built on HOG, K-NN, and PSO.
+        </p>
+      </div>
+
+      <div class="footer__col">
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="/#events">Events</a></li>
+          <li><a href="/#how-it-works">How entry works</a></li>
+          <li><a href="/#method">Method</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h3>System</h3>
+        <ul>
+          <li>HOG descriptor</li>
+          <li>K-NN matching</li>
+          <li>PSO threshold</li>
+          <li>Single-use tokens</li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h3>Project</h3>
+        <ul>
+          <li><a href="/dev/styleguide">Style guide</a></li>
+          <li>PCVK · Semester 5</li>
+          <li>JESSI 2026 reference</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {{ current_year }} SmartTicket. Frontend prototype — demo data.</span>
+      <span class="mono">HOG / KNN / PSO</span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f3ec">
+  <meta
+    name="description"
+    content="{% block description %}SmartTicket pairs single-use QR passes with on-site facial verification for event entry.{% endblock %}"
+  >
+  <title>{% block title %}SmartTicket{% endblock %}</title>
+
+  <link rel="icon" href="{{ url_for('static', path='/images/favicon.svg') }}" type="image/svg+xml">
+  <link
+    rel="preload"
+    href="{{ url_for('static', path='/vendor/fonts/instrument-sans-latin.woff2') }}"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+  <link
+    rel="preload"
+    href="{{ url_for('static', path='/vendor/fonts/instrument-serif-latin.woff2') }}"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/components.css') }}">
+  {% block page_css %}{% endblock %}
+</head>
+<body data-page="{{ active_page or 'page' }}" data-demo-mode="{{ 'true' if demo_mode else 'false' }}">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  {% include "components/navbar.html" %}
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "components/footer.html" %}
+
+  <script type="module" src="{{ url_for('static', path='/js/app.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
