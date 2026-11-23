@@ -36,6 +36,7 @@ storage/model_artifacts/*
 *~
 .DS_Store
 Thumbs.db
+README.md
 
 # Logs
 *.log
