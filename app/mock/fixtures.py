@@ -102,6 +102,10 @@ class DemoEvent:
         ]
 
     @property
+    def days_until(self) -> int:
+        return max(0, (self.start_at.date() - datetime.now().date()).days)
+
+    @property
     def url(self) -> str:
         return f"/events/{self.id}"
 
@@ -120,6 +124,70 @@ class DemoTicket:
     @property
     def short_code(self) -> str:
         return self.code[-8:].upper()
+
+
+@dataclass(frozen=True)
+class DemoTicketView:
+    """A ticket joined with its event and holder, mirroring ORM relationships."""
+
+    id: str
+    code: str
+    event: DemoEvent
+    user: DemoUser
+    status: str
+    issued_at: datetime
+    used_at: datetime | None
+    seat: str
+
+    @property
+    def short_code(self) -> str:
+        return self.code[-8:].upper()
+
+    @property
+    def is_active(self) -> bool:
+        return self.status == "ACTIVE"
+
+    @property
+    def is_used(self) -> bool:
+        return self.status == "USED"
+
+
+@dataclass(frozen=True)
+class DemoFaceProfile:
+    id: str
+    user_id: str
+    enrollment_status: str
+    sample_count: int
+    updated_at: datetime
+
+    @property
+    def is_complete(self) -> bool:
+        return self.enrollment_status == "COMPLETED"
+
+
+@dataclass(frozen=True)
+class DemoRegistration:
+    id: str
+    user_id: str
+    event_id: str
+    status: str
+    created_at: datetime
+    ticket_id: str | None
+
+
+@dataclass(frozen=True)
+class DemoRegistrationView:
+    """A registration joined with its event and ticket."""
+
+    id: str
+    status: str
+    created_at: datetime
+    event: DemoEvent
+    ticket: DemoTicketView | None
+
+    @property
+    def ticket_status(self) -> str:
+        return self.ticket.status if self.ticket else "PENDING"
 
 
 @dataclass(frozen=True)
@@ -325,6 +393,48 @@ def demo_tickets() -> list[DemoTicket]:
             issued_at=now - timedelta(days=20),
             used_at=now - timedelta(days=17, hours=3),
             seat="GA · Gate 4",
+        ),
+    ]
+
+
+def demo_face_profiles() -> list[DemoFaceProfile]:
+    return [
+        DemoFaceProfile(
+            id="fcp-participant",
+            user_id="usr-participant",
+            enrollment_status="COMPLETED",
+            sample_count=9,
+            updated_at=datetime.now() - timedelta(days=12),
+        ),
+    ]
+
+
+def demo_registrations() -> list[DemoRegistration]:
+    now = datetime.now()
+    return [
+        DemoRegistration(
+            id="reg-senja-kala",
+            user_id="usr-participant",
+            event_id="evt-senja-kala",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=4),
+            ticket_id="tkt-senja-kala",
+        ),
+        DemoRegistration(
+            id="reg-ruang-reka",
+            user_id="usr-participant",
+            event_id="evt-ruang-reka",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=2),
+            ticket_id="tkt-ruang-reka",
+        ),
+        DemoRegistration(
+            id="reg-nada-timur",
+            user_id="usr-participant",
+            event_id="evt-nada-timur",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=20),
+            ticket_id="tkt-nada-timur",
         ),
     ]
 

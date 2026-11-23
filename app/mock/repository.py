@@ -6,13 +6,21 @@ depend on the methods declared here, not on the fixture implementation.
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from app.mock.fixtures import (
     DemoCheckinLog,
     DemoEvent,
+    DemoFaceProfile,
+    DemoRegistration,
+    DemoRegistrationView,
     DemoTicket,
+    DemoTicketView,
     DemoUser,
     demo_checkin_logs,
     demo_events,
+    demo_face_profiles,
+    demo_registrations,
     demo_tickets,
     demo_users,
 )
@@ -26,6 +34,8 @@ class DemoRepository:
         self._tickets = demo_tickets()
         self._users = {user.id: user for user in demo_users()}
         self._checkin_logs = demo_checkin_logs()
+        self._face_profiles = {profile.user_id: profile for profile in demo_face_profiles()}
+        self._registrations = demo_registrations()
 
     def list_events(self, limit: int | None = None) -> list[DemoEvent]:
         events = list(self._events)
@@ -84,8 +94,84 @@ class DemoRepository:
     def user_for_role(self, role: str) -> DemoUser | None:
         return next((user for user in self._users.values() if user.role == role), None)
 
+    def get_user(self, user_id: str) -> DemoUser | None:
+        return self._users.get(user_id)
+
+    def face_profile_for(self, user_id: str) -> DemoFaceProfile | None:
+        return self._face_profiles.get(user_id)
+
     def list_tickets_for(self, user_id: str) -> list[DemoTicket]:
         return [ticket for ticket in self._tickets if ticket.user_id == user_id]
+
+    def ticket_by_id(self, ticket_id: str) -> DemoTicket | None:
+        return next((ticket for ticket in self._tickets if ticket.id == ticket_id), None)
+
+    def _join_ticket(self, ticket: DemoTicket) -> DemoTicketView | None:
+        event = self.get_event(ticket.event_id)
+        user = self.get_user(ticket.user_id)
+        if event is None or user is None:
+            return None
+
+        return DemoTicketView(
+            id=ticket.id,
+            code=ticket.code,
+            event=event,
+            user=user,
+            status=ticket.status,
+            issued_at=ticket.issued_at,
+            used_at=ticket.used_at,
+            seat=ticket.seat,
+        )
+
+    def ticket_view(self, ticket_id: str) -> DemoTicketView | None:
+        ticket = self.ticket_by_id(ticket_id)
+        return self._join_ticket(ticket) if ticket else None
+
+    def list_ticket_views_for(self, user_id: str) -> list[DemoTicketView]:
+        """Active passes first, then the most recent events."""
+
+        views = [self._join_ticket(ticket) for ticket in self.list_tickets_for(user_id)]
+        tickets = [view for view in views if view is not None]
+        tickets.sort(key=lambda view: (not view.is_active, view.event.start_at))
+        return tickets
+
+    def next_ticket_for(self, user_id: str) -> DemoTicketView | None:
+        """The soonest active pass for an event that has not started yet."""
+
+        now = datetime.now()
+        upcoming = [
+            view
+            for view in self.list_ticket_views_for(user_id)
+            if view.is_active and view.event.start_at >= now
+        ]
+        return upcoming[0] if upcoming else None
+
+    def list_registration_views_for(self, user_id: str) -> list[DemoRegistrationView]:
+        views: list[DemoRegistrationView] = []
+        for registration in self._registrations:
+            if registration.user_id != user_id:
+                continue
+            event = self.get_event(registration.event_id)
+            if event is None:
+                continue
+            ticket = self.ticket_view(registration.ticket_id) if registration.ticket_id else None
+            views.append(
+                DemoRegistrationView(
+                    id=registration.id,
+                    status=registration.status,
+                    created_at=registration.created_at,
+                    event=event,
+                    ticket=ticket,
+                )
+            )
+
+        views.sort(key=lambda view: view.event.start_at)
+        return views
+
+    def list_registrations_for(self, user_id: str) -> list[DemoRegistration]:
+        return [
+            registration for registration in self._registrations if registration.user_id == user_id
+        ]
 
     def list_checkin_logs(self, limit: int | None = None) -> list[DemoCheckinLog]:
         logs = sorted(self._checkin_logs, key=lambda log: log.created_at, reverse=True)
