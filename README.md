@@ -8,9 +8,27 @@ The recognition pipeline (HOG descriptor, K-NN matching, PSO-tuned threshold)
 runs on the Python backend. This repository is being built frontend-first and
 will be wired to the backend data layer as it lands.
 
-> **Status — PR 1 / foundation.** The application shell, design system, landing
-> page, component style guide, and demo data repository are in place. Event
-> catalog, auth, dashboards, enrollment, and scanner flows are next.
+> **Status — PR 2 / public catalog.** The application shell, design system,
+> landing page, event catalog, event detail, account screens, component style
+> guide, and demo data repository are in place. Participant, operator, admin,
+> and CV lab screens are next.
+
+## Frontend scope
+
+This build is interface only. Every screen renders from demo fixtures, and
+interactive flows stop at the presentation layer:
+
+- Sign-in and registration forms validate in the browser, then re-render the
+  page with a visible "demo mode" notice. No session, cookie, or account is
+  created.
+- Registration buttons on event pages lead to sign-in. There is no booking
+  transaction.
+- Face recognition is not simulated anywhere. The operator screens will show a
+  real idle/scanning state and only display a verdict once the backend
+  endpoint returns one.
+
+Connecting the forms and scanner to the backend happens in a later pass, once
+the API contract in `docs/integration-contract.md` is implemented.
 
 ---
 
@@ -38,6 +56,9 @@ Useful routes:
 | Route | Purpose |
 | --- | --- |
 | `/` | Public landing page |
+| `/events` | Event catalog with search and category filter |
+| `/events/{id}` | Event detail with schedule and entry steps |
+| `/auth/login`, `/auth/register` | Account screens (presentation only) |
 | `/dev/styleguide` | Design tokens and component catalogue |
 | `/healthz` | Application health check |
 | `/api/docs` | OpenAPI docs (development only) |
@@ -70,7 +91,7 @@ app/
 ├── templates/
 │   ├── base.html
 │   ├── components/          # Navbar, footer, cards, icon macro
-│   ├── public/              # Landing and future public pages
+│   ├── public/              # Landing, catalog, event detail, account screens
 │   ├── dev/                 # Style guide (development only)
 │   └── errors/
 └── static/
@@ -104,7 +125,7 @@ rewrites with data-layer changes. The PR template includes a review checklist.
 Current branch plan:
 
 1. `rachmad` — foundation, design system, landing, style guide
-2. Event catalog and auth
+2. Event catalog, event detail, and account screens
 3. Participant dashboard, enrollment, tickets
 4. Operator scanner flow
 5. Admin panels and CV lab shell
