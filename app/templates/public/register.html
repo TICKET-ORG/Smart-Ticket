@@ -1,0 +1,83 @@
+{% extends "public/auth_base.html" %}
+{% from "components/icons.html" import icon with context %}
+
+{% block title %}Create an account — SmartTicket{% endblock %}
+{% block description %}Create a SmartTicket account, then enroll your face once for every event you register for.{% endblock %}
+
+{% block auth_eyebrow %}New account{% endblock %}
+{% block auth_statement %}Enroll once. <em>Walk in</em> anywhere.{% endblock %}
+{% block auth_copy %}
+  An account holds your passes and your enrollment. The face check only runs
+  at the gate, and only against the pass in front of the operator.
+{% endblock %}
+
+{% block form_title %}Create your account{% endblock %}
+{% block form_lede %}Two minutes now saves the queue later.{% endblock %}
+
+{% block auth_form %}
+<form
+  class="auth-form"
+  method="post"
+  action="/auth/register{% if next %}?next={{ next|urlencode }}{% endif %}"
+>
+  <div class="field">
+    <label class="label" for="register-name">Full name</label>
+    <input
+      class="input"
+      id="register-name"
+      name="name"
+      type="text"
+      autocomplete="name"
+      placeholder="Alya Prameswari"
+      value="{{ form_name|default('') }}"
+      required
+    >
+    <span class="hint">Use the name printed on your ID.</span>
+  </div>
+
+  <div class="field">
+    <label class="label" for="register-email">Email address</label>
+    <input
+      class="input"
+      id="register-email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      placeholder="you@example.com"
+      value="{{ form_email|default('') }}"
+      required
+    >
+  </div>
+
+  <div class="field">
+    <label class="label" for="register-password">Password</label>
+    <input
+      class="input"
+      id="register-password"
+      name="password"
+      type="password"
+      autocomplete="new-password"
+      minlength="8"
+      required
+    >
+    <span class="hint">At least eight characters. Never sent anywhere in this build.</span>
+  </div>
+
+  <label class="check" for="register-consent" style="margin-top: 1rem;">
+    <input id="register-consent" name="consent" type="checkbox" required>
+    <span>
+      I consent to facial verification for the events I register for, and I
+      understand a failed match leaves my pass active.
+    </span>
+  </label>
+
+  <button class="btn btn--primary btn--lg btn--block" type="submit">
+    Create account
+    {{ icon("arrow-right") }}
+  </button>
+</form>
+{% endblock %}
+
+{% block auth_switch %}
+  Already have an account? <a href="/auth/login">Sign in</a>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "public/auth_base.html" %}
+{% from "components/icons.html" import icon with context %}
+
+{% block title %}Sign in — SmartTicket{% endblock %}
+{% block description %}Sign in to register for events, enroll your face once, and keep every pass in one place.{% endblock %}
+
+{% block auth_eyebrow %}Sign in{% endblock %}
+{% block auth_statement %}Your face is the <em>ticket.</em>{% endblock %}
+{% block auth_copy %}
+  One pass, one face, one entry. Sign in to register, enroll, and keep every
+  pass in one place.
+{% endblock %}
+
+{% block form_title %}Welcome back{% endblock %}
+{% block form_lede %}Use the email you registered with.{% endblock %}
+
+{% block auth_form %}
+<form
+  class="auth-form"
+  method="post"
+  action="/auth/login{% if next %}?next={{ next|urlencode }}{% endif %}"
+>
+  <div class="field">
+    <label class="label" for="login-email">Email address</label>
+    <input
+      class="input"
+      id="login-email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      placeholder="you@example.com"
+      value="{{ form_email|default('') }}"
+      required
+    >
+  </div>
+
+  <div class="field">
+    <label class="label" for="login-password">Password</label>
+    <input
+      class="input"
+      id="login-password"
+      name="password"
+      type="password"
+      autocomplete="current-password"
+      required
+    >
+    <span class="hint">Passwords are never sent anywhere in this build.</span>
+  </div>
+
+  <button class="btn btn--primary btn--lg btn--block" type="submit">
+    Sign in
+    {{ icon("arrow-right") }}
+  </button>
+</form>
+{% endblock %}
+
+{% block auth_switch %}
+  New here? <a href="/auth/register">Create an account</a>
+{% endblock %}

@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import BASE_DIR, settings
-from app.web.routes import events, frontend
+from app.web.routes import auth, events, frontend
 from app.web.templating import render
 
 
@@ -24,6 +24,7 @@ def create_app() -> FastAPI:
 
     application.include_router(frontend.router)
     application.include_router(events.router)
+    application.include_router(auth.router)
 
     @application.get("/healthz", include_in_schema=False)
     def healthz() -> dict[str, str | bool]:

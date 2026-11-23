@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "components/icons.html" import icon with context %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth">
+  <div class="auth__panel">
+    <div class="auth__panel-inner">
+      <p class="eyebrow">{% block auth_eyebrow %}Account{% endblock %}</p>
+
+      <h1 class="auth__statement">
+        {% block auth_statement %}Your face is the <em>ticket.</em>{% endblock %}
+      </h1>
+
+      <p class="auth__panel-copy">
+        {% block auth_copy %}
+          One pass, one face, one entry. Sign in to register for events,
+          enroll once, and keep every pass in one place.
+        {% endblock %}
+      </p>
+
+      <ul class="auth__facts">
+        <li>{{ icon("scan-face") }}<span>Two-stage check: QR token, then face</span></li>
+        <li>{{ icon("shield-check") }}<span>Features stored privately, server-side</span></li>
+        <li>{{ icon("ticket") }}<span>Single-use passes, no transfers</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="auth__form-col">
+    <div class="auth__form">
+      <div class="auth__form-head">
+        <h2>{% block form_title %}Sign in{% endblock %}</h2>
+        <p>{% block form_lede %}Use the email you registered with.{% endblock %}</p>
+      </div>
+
+      {% if notice %}
+        <div class="alert alert--info" role="status">
+          {{ icon("info") }}
+          <span>{{ notice }}</span>
+        </div>
+      {% endif %}
+
+      {% block auth_form %}{% endblock %}
+
+      <p class="auth__switch">
+        {% block auth_switch %}{% endblock %}
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}
