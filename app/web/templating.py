@@ -5,8 +5,12 @@ from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
 from app.config import BASE_DIR, settings
+from app.web.navigation import DEMO_ROLES, nav_for, role_label
 
 templates = Jinja2Templates(directory=str(BASE_DIR / "app" / "templates"))
+
+templates.env.globals["nav_for"] = nav_for
+templates.env.globals["role_label"] = role_label
 
 
 def _strftime(value: datetime | date | None, fmt: str) -> str:
@@ -36,6 +40,10 @@ def render(
         "current_year": date.today().year,
         "demo_mode": settings.demo_mode,
         "active_page": None,
+        "nav_role": None,
+        "page_title": None,
+        "page_kicker": None,
+        "demo_roles": DEMO_ROLES,
     }
     if context:
         payload.update(context)

@@ -1,0 +1,41 @@
+{% from "components/icons.html" import icon with context %}
+<aside class="app-sidebar" id="app-sidebar" aria-label="Dashboard">
+  <div class="app-sidebar__head">
+    <a class="brand" href="/" aria-label="SmartTicket home">
+      <span class="brand__mark">{{ icon("ticket") }}</span>
+      <span class="brand__name">smartticket</span>
+    </a>
+
+    <button
+      class="app-sidebar__close"
+      type="button"
+      data-shell-close
+      aria-label="Close menu"
+    >
+      {{ icon("x") }}
+    </button>
+  </div>
+
+  <p class="app-sidebar__role">{{ role_label(nav_role) }} workspace</p>
+
+  <nav class="app-nav" aria-label="{{ role_label(nav_role) }}">
+    {% for item in nav_for(nav_role) %}
+      <a
+        class="app-nav__link"
+        href="{{ item.href }}"
+        {% if active_page == item.page %}aria-current="page"{% endif %}
+      >
+        {{ icon(item.icon) }}
+        <span>{{ item.label }}</span>
+      </a>
+    {% endfor %}
+  </nav>
+
+  <div class="app-sidebar__foot">
+    <a class="app-sidebar__site" href="/">
+      {{ icon("arrow-left") }}
+      <span>Public site</span>
+    </a>
+    <p class="app-sidebar__note">Frontend preview · demo data</p>
+  </div>
+</aside>

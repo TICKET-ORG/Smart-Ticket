@@ -1,0 +1,59 @@
+{% from "components/icons.html" import icon with context %}
+<header class="app-topbar">
+  <button
+    class="app-topbar__toggle"
+    type="button"
+    data-shell-toggle
+    aria-expanded="false"
+    aria-controls="app-sidebar"
+    aria-label="Open menu"
+  >
+    {{ icon("menu") }}
+  </button>
+
+  <div class="app-topbar__title">
+    <span class="app-topbar__kicker">{{ page_kicker }}</span>
+    <span class="app-topbar__page">{{ page_title }}</span>
+  </div>
+
+  <details class="role-switch" data-role-switch>
+    <summary class="role-switch__summary">
+      <span class="avatar">{{ user.initials if user else "ST" }}</span>
+      <span class="role-switch__who">
+        <span class="role-switch__name">{{ user.name if user else "Demo user" }}</span>
+        <span class="role-switch__role">{{ role_label(nav_role) }} · demo</span>
+      </span>
+      {{ icon("chevron-down", "role-switch__chevron") }}
+    </summary>
+
+    <div class="role-switch__menu">
+      <p class="role-switch__menu-label">Switch demo role</p>
+
+      {% for role in demo_roles %}
+        {% if role.available %}
+          <a
+            class="role-switch__item"
+            href="{{ role.href }}"
+            {% if role.id == nav_role %}aria-current="true"{% endif %}
+          >
+            <span>
+              <span class="role-switch__item-label">{{ role.label }}</span>
+              <span class="role-switch__item-desc">{{ role.description }}</span>
+            </span>
+            {% if role.id == nav_role %}{{ icon("check") }}{% endif %}
+          </a>
+        {% else %}
+          <span class="role-switch__item is-disabled" aria-disabled="true">
+            <span>
+              <span class="role-switch__item-label">{{ role.label }}</span>
+              <span class="role-switch__item-desc">{{ role.description }}</span>
+            </span>
+            <span class="role-switch__soon">Next</span>
+          </span>
+        {% endif %}
+      {% endfor %}
+
+      <a class="role-switch__signout" href="/auth/login">Sign out</a>
+    </div>
+  </details>
+</header>
