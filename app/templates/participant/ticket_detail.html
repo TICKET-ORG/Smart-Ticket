@@ -1,0 +1,136 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+
+{% block title %}{{ ticket.event.title }} — Your pass{% endblock %}
+{% block description %}Your QR pass for {{ ticket.event.title }}.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/participant.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page">
+  <a class="back-link" href="/participant/tickets">
+    {{ icon("arrow-left") }}
+    All tickets
+  </a>
+
+  <div class="pass-layout">
+    <article class="pass-sheet">
+      <header
+        class="pass-sheet__head"
+        style="--cover: {{ ticket.event.accent }}"
+        data-initial="{{ ticket.event.initial }}"
+      >
+        <p class="pass-sheet__kicker">
+          Admit one
+          <span aria-hidden="true">·</span>
+          {{ ticket.status }}
+        </p>
+        <h1>{{ ticket.event.title }}</h1>
+        <p class="pass-sheet__meta">
+          {{ ticket.event.date_long }} · doors {{ ticket.event.checkin_open_at|time }}<br>
+          {{ ticket.event.location }}, {{ ticket.event.city }}
+        </p>
+      </header>
+
+      <div class="pass-sheet__body">
+        <div class="pass-qr{% if ticket.is_used %} pass-qr--used{% endif %}">
+          <img
+            src="{{ url_for('participant_ticket_qr', ticket_id=ticket.id) }}"
+            alt="QR code for {{ ticket.event.title }}"
+            width="248"
+            height="248"
+          >
+          {% if ticket.is_used %}
+            <span class="pass-qr__flag">Used</span>
+          {% endif %}
+        </div>
+
+        <dl class="pass-sheet__facts">
+          <div>
+            <dt>Holder</dt>
+            <dd>{{ ticket.user.name }}</dd>
+          </div>
+          <div>
+            <dt>Seat</dt>
+            <dd>{{ ticket.seat }}</dd>
+          </div>
+          <div>
+            <dt>Issued</dt>
+            <dd>{{ ticket.issued_at|date_short }}</dd>
+          </div>
+          <div>
+            <dt>Pass ID</dt>
+            <dd class="mono">{{ ticket.id }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="pass-sheet__token">
+        <span>Manual entry token</span>
+        <code>{{ ticket.code }}</code>
+      </div>
+    </article>
+
+    <aside class="pass-notes">
+      {% if ticket.is_used %}
+        <div class="alert alert--warning">
+          {{ icon("clock") }}
+          <span>
+            This pass was used on
+            {{ ticket.used_at|date_short }} at {{ ticket.used_at|time }}.
+            It cannot be scanned again.
+          </span>
+        </div>
+      {% else %}
+        <div class="alert alert--success">
+          {{ icon("shield-check") }}
+          <span>
+            Active. Valid for one entry at {{ ticket.event.location }}.
+            Have the QR ready when you reach the gate.
+          </span>
+        </div>
+      {% endif %}
+
+      <section class="pass-notes__section">
+        <h2>At the gate</h2>
+        <ol class="gate-steps">
+          <li>
+            <span>01</span>
+            <p>The operator scans this QR. One token, one attempt.</p>
+          </li>
+          <li>
+            <span>02</span>
+            <p>The camera compares the live frame with your enrolled profile.</p>
+          </li>
+          <li>
+            <span>03</span>
+            <p>A match consumes the pass. A failed match leaves it active.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="pass-notes__section">
+        <h2>Before you go</h2>
+        <dl class="fact-list">
+          <div>
+            <dt>Check-in opens</dt>
+            <dd>{{ ticket.event.checkin_open_at|date_short }} · {{ ticket.event.checkin_open_at|time }}</dd>
+          </div>
+          <div>
+            <dt>Check-in closes</dt>
+            <dd>{{ ticket.event.checkin_close_at|time }}</dd>
+          </div>
+          <div>
+            <dt>Transfers</dt>
+            <dd>Not allowed</dd>
+          </div>
+        </dl>
+      </section>
+
+      <p class="demo-note">Demo ticket · not a real admission</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

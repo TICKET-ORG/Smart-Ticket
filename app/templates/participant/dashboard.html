@@ -1,0 +1,223 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import status_badge with context %}
+
+{% block title %}Overview — SmartTicket{% endblock %}
+{% block description %}Your passes, face enrollment, and event registrations.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/participant.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Participant</p>
+      <h1>Welcome back, {{ user.first_name }}.</h1>
+      <p>
+        Your passes, your enrollment, and every event you have registered for.
+        Entry is checked twice: the pass, then the face.
+      </p>
+    </div>
+    <div class="app-head__actions">
+      <a class="btn btn--outline" href="/events">
+        Browse events
+        {{ icon("arrow-right") }}
+      </a>
+    </div>
+  </header>
+
+  <section class="metric-row" aria-label="Account summary">
+    <div class="metric">
+      <span class="metric__value">{{ active_ticket_count }}</span>
+      <span class="metric__label">Active passes</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">
+        {{ sample_count }}<span class="metric__unit"> / {{ target_samples }}</span>
+      </span>
+      <span class="metric__label">Face samples</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ registrations|length }}</span>
+      <span class="metric__label">Registrations</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">
+        {% if next_ticket %}{{ next_ticket.event.days_until }}{% else %}—{% endif %}
+      </span>
+      <span class="metric__label">Days to next event</span>
+    </div>
+  </section>
+
+  <div class="dash-split">
+    <section class="dash-next" aria-labelledby="next-up-heading">
+      <h2 class="visually-hidden" id="next-up-heading">Next event</h2>
+
+      {% if next_ticket %}
+        <article class="next-card">
+          <div class="next-card__date" aria-hidden="true">
+            <span class="next-card__day">{{ next_ticket.event.start_at|date("%d") }}</span>
+            <span class="next-card__month">{{ next_ticket.event.start_at|date("%b") }}</span>
+          </div>
+
+          <div class="next-card__body">
+            {% set days = next_ticket.event.days_until %}
+            <p class="next-card__kicker">
+              Next up ·
+              {% if days == 0 %}
+                today
+              {% elif days == 1 %}
+                tomorrow
+              {% else %}
+                in {{ days }} days
+              {% endif %}
+            </p>
+            <h2>{{ next_ticket.event.title }}</h2>
+            <p class="next-card__meta">
+              {{ next_ticket.event.date_long }} · {{ next_ticket.event.time_short }}<br>
+              {{ next_ticket.event.location }}, {{ next_ticket.event.city }}
+            </p>
+
+            <div class="next-card__actions">
+              <a class="btn btn--accent" href="/participant/tickets/{{ next_ticket.id }}">
+                Show pass
+                {{ icon("arrow-right") }}
+              </a>
+              <span class="next-card__seat">{{ next_ticket.seat }}</span>
+            </div>
+          </div>
+        </article>
+      {% else %}
+        <div class="empty-state">
+          {{ icon("calendar") }}
+          <h2>No upcoming pass.</h2>
+          <p>
+            Pick an event from the calendar and it will appear here with its
+            pass once registration opens.
+          </p>
+          <div class="cluster" style="justify-content: center; margin-top: 1.25rem;">
+            <a class="btn btn--outline" href="/events">Browse events</a>
+          </div>
+        </div>
+      {% endif %}
+    </section>
+
+    <aside class="side-card" aria-labelledby="enrollment-heading">
+      <div class="side-card__head">
+        <span class="side-card__label">Face enrollment</span>
+        {% if face_profile and face_profile.is_complete %}
+          <span class="badge badge--success">Complete</span>
+        {% else %}
+          <span class="badge badge--warning">Required</span>
+        {% endif %}
+      </div>
+
+      <h2 class="side-card__title" id="enrollment-heading">
+        {% if face_profile and face_profile.is_complete %}
+          Profile verified
+        {% else %}
+          Enrollment incomplete
+        {% endif %}
+      </h2>
+
+      <p class="side-card__lede">
+        {% if face_profile and face_profile.is_complete %}
+          Nine samples are on file. They are compared only against the pass in
+          front of the operator, never against the whole gallery.
+        {% else %}
+          Capture nine guided samples before your first event. It takes about
+          two minutes.
+        {% endif %}
+      </p>
+
+      <dl class="fact-list">
+        <div>
+          <dt>Samples</dt>
+          <dd>{{ sample_count }} / {{ target_samples }}</dd>
+        </div>
+        <div>
+          <dt>Last updated</dt>
+          <dd>
+            {% if face_profile %}
+              {{ face_profile.updated_at|date_short }}
+            {% else %}
+              Never
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+
+      <a class="btn btn--outline btn--block" href="/participant/enrollment">
+        {% if face_profile and face_profile.is_complete %}
+          Re-enroll face
+        {% else %}
+          Start enrollment
+        {% endif %}
+      </a>
+
+      <p class="demo-note">Demo — no frame is uploaded</p>
+    </aside>
+  </div>
+
+  <section class="app-section" aria-labelledby="registrations-heading">
+    <div class="app-section__head">
+      <h2 id="registrations-heading">Your registrations</h2>
+      <p>{{ "%02d"|format(registrations|length) }} on file</p>
+    </div>
+
+    {% if registrations %}
+      <div class="table-wrap">
+        <table class="data-table data-table--stack">
+          <thead>
+            <tr>
+              <th scope="col">Event</th>
+              <th scope="col">When</th>
+              <th scope="col">Pass</th>
+              <th scope="col"><span class="visually-hidden">Action</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for registration in registrations %}
+              <tr>
+                <td>
+                  <a class="row-title" href="{{ registration.event.url }}">
+                    {{ registration.event.title }}
+                  </a>
+                  <span class="row-sub">
+                    {{ registration.event.location }}, {{ registration.event.city }}
+                  </span>
+                </td>
+                <td class="numeric" data-label="When">
+                  {{ registration.event.start_at|date_short }} · {{ registration.event.start_at|time }}
+                </td>
+                <td data-label="Pass">{{ status_badge(registration.ticket_status) }}</td>
+                <td class="row-action">
+                  {% if registration.ticket %}
+                    <a class="text-link" href="/participant/tickets/{{ registration.ticket.id }}">
+                      View pass
+                      {{ icon("arrow-right") }}
+                    </a>
+                  {% else %}
+                    <span class="row-sub">Awaiting enrollment</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("ticket") }}
+        <h2>Nothing registered yet.</h2>
+        <p>Your registrations and their passes will be listed here.</p>
+        <div class="cluster" style="justify-content: center; margin-top: 1.25rem;">
+          <a class="btn btn--outline" href="/events">Find an event</a>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

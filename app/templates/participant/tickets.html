@@ -1,0 +1,83 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import status_badge with context %}
+
+{% block title %}Tickets — SmartTicket{% endblock %}
+{% block description %}Every pass on your account, with its status and QR code.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/participant.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Tickets</p>
+      <h1>Your passes.</h1>
+      <p>
+        Each pass is single-use and bound to your enrolled face. Show the QR at
+        the gate, then look at the camera.
+      </p>
+    </div>
+    <div class="app-head__actions">
+      <a class="btn btn--outline" href="/events">
+        Browse events
+        {{ icon("arrow-right") }}
+      </a>
+    </div>
+  </header>
+
+  {% if tickets %}
+    <div class="pass-grid">
+      {% for ticket in tickets %}
+        <article class="pass-card{% if ticket.is_used %} pass-card--muted{% endif %}">
+          <div class="pass-card__top">
+            <span class="pass-card__kicker">{{ ticket.event.category }}</span>
+            {{ status_badge(ticket.status) }}
+          </div>
+
+          <h2 class="pass-card__title">
+            <a href="/participant/tickets/{{ ticket.id }}">{{ ticket.event.title }}</a>
+          </h2>
+
+          <dl class="pass-card__facts">
+            <div>
+              <dt>Date</dt>
+              <dd>{{ ticket.event.start_at|date_short }} · {{ ticket.event.start_at|time }}</dd>
+            </div>
+            <div>
+              <dt>Venue</dt>
+              <dd>{{ ticket.event.location }}, {{ ticket.event.city }}</dd>
+            </div>
+            <div>
+              <dt>Pass</dt>
+              <dd>{{ ticket.seat }}</dd>
+            </div>
+          </dl>
+
+          <div class="pass-card__foot">
+            <code class="pass-card__code">{{ ticket.short_code }}</code>
+            <a class="text-link" href="/participant/tickets/{{ ticket.id }}">
+              View pass
+              {{ icon("arrow-right") }}
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      {{ icon("ticket") }}
+      <h2>No passes yet.</h2>
+      <p>
+        Register for an event and complete enrollment. Your first pass will
+        appear here.
+      </p>
+      <div class="cluster" style="justify-content: center; margin-top: 1.25rem;">
+        <a class="btn btn--outline" href="/events">Find an event</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

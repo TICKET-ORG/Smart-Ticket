@@ -1,0 +1,158 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+
+{% block title %}Face enrollment — SmartTicket{% endblock %}
+{% block description %}Capture nine guided face samples for single-use pass verification.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/participant.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page app-page--narrow">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Enrollment</p>
+      <h1>Nine frames. One profile.</h1>
+      <p>
+        Capture each pose once. The profile is tied to your account and used
+        only to check the pass you present at the gate.
+      </p>
+    </div>
+  </header>
+
+  <div class="enroll-layout">
+    <section class="capture-panel" data-enrollment aria-label="Camera capture">
+      <div class="capture-frame">
+        <video
+          class="capture-frame__video"
+          data-camera-video
+          autoplay
+          playsinline
+          muted
+          hidden
+        ></video>
+
+        <div class="capture-frame__placeholder" data-camera-placeholder>
+          {{ icon("camera") }}
+          <span>Camera is off</span>
+        </div>
+
+        <span class="scan-frame__corner scan-frame__corner--tl" aria-hidden="true"></span>
+        <span class="scan-frame__corner scan-frame__corner--tr" aria-hidden="true"></span>
+        <span class="scan-frame__corner scan-frame__corner--bl" aria-hidden="true"></span>
+        <span class="scan-frame__corner scan-frame__corner--br" aria-hidden="true"></span>
+      </div>
+
+      <div class="capture-meta">
+        <div class="capture-copy">
+          <p class="capture-count">
+            <span data-pose-count>00 / {{ "%02d"|format(target_samples) }}</span>
+            captured
+          </p>
+          <p class="capture-pose" data-pose-label>{{ poses[0].label }}</p>
+          <p class="capture-instruction" data-pose-instruction>{{ poses[0].instruction }}</p>
+        </div>
+
+        <div class="capture-actions">
+          <button class="btn btn--primary" type="button" data-camera-start>
+            Start camera
+          </button>
+          <button class="btn btn--accent" type="button" data-camera-capture disabled>
+            Capture frame
+          </button>
+          <button class="btn btn--ghost btn--sm" type="button" data-enrollment-reset hidden>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Samples captured"
+        aria-valuemin="0"
+        aria-valuemax="{{ target_samples }}"
+        aria-valuenow="0"
+        data-progressbar
+      >
+        <span class="progress__bar" data-progress style="--value: 0%"></span>
+      </div>
+
+      <p class="capture-status" data-camera-status role="status" aria-live="polite">
+        Nothing leaves this browser. Start the camera to capture the nine poses.
+      </p>
+
+      <div class="alert alert--success" data-enrollment-notice role="status" hidden>
+        {{ icon("info") }}
+        <span>Demo mode — enrollment is not connected yet. Nothing was uploaded or saved.</span>
+      </div>
+    </section>
+
+    <aside class="enroll-rail">
+      <div class="enroll-summary">
+        <div class="side-card__head">
+          <span class="side-card__label">Current profile</span>
+          {% if face_profile and face_profile.is_complete %}
+            <span class="badge badge--success">Complete</span>
+          {% else %}
+            <span class="badge badge--warning">Required</span>
+          {% endif %}
+        </div>
+        <p class="side-card__lede">
+          {% if face_profile and face_profile.is_complete %}
+            Enrolled with {{ sample_count }} samples on
+            {{ face_profile.updated_at|date_short }}. Re-capturing replaces this
+            demo profile.
+          {% else %}
+            No profile yet. Capture all nine poses, then confirm consent.
+          {% endif %}
+        </p>
+      </div>
+
+      <ol class="pose-list" aria-label="Capture sequence">
+        {% for pose in poses %}
+          <li
+            class="pose-list__item"
+            data-pose="{{ pose.id }}"
+            data-label="{{ pose.label }}"
+            data-instruction="{{ pose.instruction }}"
+          >
+            <span class="pose-list__index">{{ "%02d"|format(loop.index) }}</span>
+            <span class="pose-list__body">
+              <span class="pose-list__label">{{ pose.label }}</span>
+              <span class="pose-list__state" data-pose-state>Waiting</span>
+            </span>
+            <img class="pose-list__thumb" data-pose-thumb alt="" hidden>
+          </li>
+        {% endfor %}
+      </ol>
+
+      <div class="consent-panel" data-consent hidden>
+        <h2>Save this profile?</h2>
+        <p>
+          The final step stores the nine samples against your account. Until
+          then everything stays in this tab.
+        </p>
+
+        <label class="check" for="enroll-consent">
+          <input id="enroll-consent" type="checkbox" data-consent-check>
+          <span>
+            I consent to facial verification for the events I attend, and I
+            understand that a failed match leaves my pass active.
+          </span>
+        </label>
+
+        <button class="btn btn--primary btn--block" type="button" data-enrollment-save disabled>
+          Save profile
+        </button>
+        <p class="demo-note">Demo — no descriptor is created</p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="module" src="{{ url_for('static', path='/js/pages/enrollment.js') }}"></script>
+{% endblock %}

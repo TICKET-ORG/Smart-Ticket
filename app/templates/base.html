@@ -32,16 +32,22 @@
   <link rel="stylesheet" href="{{ url_for('static', path='/css/components.css') }}">
   {% block page_css %}{% endblock %}
 </head>
-<body data-page="{{ active_page or 'page' }}" data-demo-mode="{{ 'true' if demo_mode else 'false' }}">
+<body
+  class="{% block body_class %}{% endblock %}"
+  data-page="{{ active_page or 'page' }}"
+  data-demo-mode="{{ 'true' if demo_mode else 'false' }}"
+>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  {% include "components/navbar.html" %}
+  {% block shell %}
+    {% include "components/navbar.html" %}
 
-  <main id="main">
-    {% block content %}{% endblock %}
-  </main>
+    <main id="main">
+      {% block content %}{% endblock %}
+    </main>
 
-  {% include "components/footer.html" %}
+    {% include "components/footer.html" %}
+  {% endblock %}
 
   <script type="module" src="{{ url_for('static', path='/js/app.js') }}"></script>
   {% block extra_scripts %}{% endblock %}

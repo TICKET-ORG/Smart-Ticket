@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block body_class %}app-body{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/app-shell.css') }}">
+{% block app_css %}{% endblock %}
+{% endblock %}
+
+{% block shell %}
+<div class="app" data-app-shell data-sidebar-open="false">
+  <div class="app__scrim" data-shell-close aria-hidden="true"></div>
+
+  {% include "components/app_sidebar.html" %}
+
+  <div class="app-main">
+    <p class="demo-strip" role="note">
+      <span class="demo-strip__dot" aria-hidden="true"></span>
+      Demo mode — role simulated.
+      <span class="demo-strip__more">No session, no real check-in.</span>
+    </p>
+
+    {% include "components/app_topbar.html" %}
+
+    <main id="main" class="app-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}
