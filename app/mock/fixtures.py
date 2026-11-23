@@ -38,6 +38,7 @@ class DemoEvent:
     title: str
     category: str
     description: str
+    organizer: str
     location: str
     city: str
     start_at: datetime
@@ -80,6 +81,25 @@ class DemoEvent:
     @property
     def is_sold_out(self) -> bool:
         return self.spots_left == 0
+
+    @property
+    def is_registration_open(self) -> bool:
+        now = datetime.now()
+        return (
+            not self.is_sold_out and self.registration_open_at <= now <= self.registration_close_at
+        )
+
+    @property
+    def schedule(self) -> list[tuple[str, datetime]]:
+        """Key timestamps already stored on the event, in reading order."""
+
+        return [
+            ("Registration opens", self.registration_open_at),
+            ("Registration closes", self.registration_close_at),
+            ("Doors open", self.checkin_open_at),
+            ("Show starts", self.start_at),
+            ("Ends", self.end_at),
+        ]
 
     @property
     def url(self) -> str:
@@ -125,6 +145,7 @@ def demo_events() -> list[DemoEvent]:
             ),
             location="Graha Cakrawala",
             city="Malang",
+            organizer="Senja Kala Collective",
             start_at=_in_days(18, 19, 30),
             end_at=_in_days(18, 23, 0),
             registration_open_at=_in_days(-6, 9),
@@ -146,6 +167,7 @@ def demo_events() -> list[DemoEvent]:
             ),
             location="Auditorium FTT",
             city="Malang",
+            organizer="Ruang Reka Studio",
             start_at=_in_days(32, 9, 0),
             end_at=_in_days(32, 17, 0),
             registration_open_at=_in_days(-2, 9),
@@ -167,6 +189,7 @@ def demo_events() -> list[DemoEvent]:
             ),
             location="Pelabuhan Tanjung Perak",
             city="Surabaya",
+            organizer="Nada Timur Foundation",
             start_at=_in_days(46, 15, 0),
             end_at=_in_days(46, 23, 0),
             registration_open_at=_in_days(-10, 9),
@@ -188,6 +211,7 @@ def demo_events() -> list[DemoEvent]:
             ),
             location="Taman Budaya",
             city="Yogyakarta",
+            organizer="Taman Budaya Yogyakarta",
             start_at=_in_days(9, 19, 0),
             end_at=_in_days(9, 21, 30),
             registration_open_at=_in_days(-14, 9),
@@ -209,6 +233,7 @@ def demo_events() -> list[DemoEvent]:
             ),
             location="Aula Simfonia",
             city="Jakarta",
+            organizer="Nusantara Philharmonic",
             start_at=_in_days(61, 20, 0),
             end_at=_in_days(61, 22, 30),
             registration_open_at=_in_days(-3, 9),
@@ -230,6 +255,7 @@ def demo_events() -> list[DemoEvent]:
             ),
             location="Alun-Alun Merdeka",
             city="Malang",
+            organizer="Alun-Alun Kolektif",
             start_at=_in_days(4, 7, 0),
             end_at=_in_days(4, 12, 0),
             registration_open_at=_in_days(-1, 9),

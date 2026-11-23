@@ -402,6 +402,39 @@
     <div class="sg-section__head">
       <span class="sg-section__index">11</span>
       <div>
+        <h2>Catalog controls</h2>
+        <p>Search field and category chips. One filter row, no dropdown menus.</p>
+      </div>
+    </div>
+
+    <div class="sg-grid">
+      <div class="sg-panel">
+        <span class="sg-panel__label">Search field</span>
+        <div class="search-field">
+          <label class="visually-hidden" for="sg-search">Search events</label>
+          <input class="search-field__input" id="sg-search" type="search" placeholder="Search by name, venue, or city">
+          <button class="search-field__submit" type="button" aria-label="Search events">
+            {{ icon("search") }}
+          </button>
+        </div>
+      </div>
+
+      <div class="sg-panel">
+        <span class="sg-panel__label">Category chips</span>
+        <div class="chip-row" style="padding-block: 0;">
+          <span class="chip" aria-current="true">All</span>
+          <span class="chip">Concert</span>
+          <span class="chip">Festival</span>
+          <span class="chip">Reading</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="sg-section__head">
+      <span class="sg-section__index">12</span>
+      <div>
         <h2>Icons</h2>
         <p>A single local sprite, 1.6px stroke, no filled or decorative glyphs.</p>
       </div>

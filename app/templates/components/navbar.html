@@ -7,13 +7,14 @@
     </a>
 
     <nav class="site-nav" id="primary-navigation" aria-label="Primary">
-      <a href="/#events" {% if active_page == "events" %}aria-current="page"{% endif %}>Events</a>
+      <a href="/events" {% if active_page == "events" %}aria-current="page"{% endif %}>Events</a>
       <a href="/#how-it-works" {% if active_page == "how-it-works" %}aria-current="page"{% endif %}>How it works</a>
       <a href="/#method" {% if active_page == "method" %}aria-current="page"{% endif %}>Method</a>
     </nav>
 
     <div class="site-header__actions">
-      <a class="btn btn--primary btn--sm" href="/#events">Browse events</a>
+      <a class="btn btn--ghost btn--sm" href="/auth/login">Sign in</a>
+      <a class="btn btn--primary btn--sm" href="/events">Browse events</a>
       <button
         class="nav-toggle"
         type="button"

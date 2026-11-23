@@ -88,6 +88,26 @@ info, accent. Status is text first. The dot is decorative and hidden on
 Dark frame, corner brackets, one instruction line. The result screen is
 full-bleed, large type, no confetti. Use `aria-live="polite"` for the verdict.
 
+### Catalog controls
+
+Search is a single bordered field with an icon submit button; categories are
+chips, not a dropdown. Active chip inverts to ink. Filtering happens on the
+server through query params, so the state is shareable and survives a reload.
+
+### Event detail
+
+The event accent becomes a full-bleed cover band with an oversized serif title
+and a hairline meta row. Below it, a two-column layout: reading column on the
+left, sticky registration card on the right. The schedule is rendered from the
+event's own timestamps — never invented.
+
+### Account screens
+
+Split layout: an ink panel carrying the promise ("Your face is the ticket."),
+and a paper column with the form. Fields keep the standard label-above-input
+pattern. Because there is no session layer yet, a submit re-renders the page
+with a demo notice instead of pretending to sign anyone in.
+
 ### Empty states
 
 State what happened, then the next action. An empty table gets a message, not a
@@ -120,6 +140,9 @@ header over nothing.
 2. Primary content: one dominant column or grid; no competing panels.
 3. Supporting detail: rules, lists, data tables.
 4. One closing action.
+
+Public pages use the shared `page-head` band. The event detail replaces it with
+a full-bleed accent cover, since the event itself is the page's subject.
 
 The landing page is the reference implementation of this rhythm. The style guide
 at `/dev/styleguide` is the living catalogue of tokens and components.

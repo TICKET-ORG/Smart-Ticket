@@ -20,10 +20,10 @@ will call. Keep it updated when a page changes its context.
 | Template | Context keys | Notes |
 | --- | --- | --- |
 | `public/landing.html` | `events`, `hero_event` | `events` is a curated list, not the next three by date |
-| `public/events.html` | `events`, `query`, `category` | Search/filter is server-side once live |
-| `public/event_details.html` | `event`, `is_registered`, `ticket` | Ticket is `None` until enrollment completes |
-| `public/login.html` | `error_msg`, `next` | Preserve `next` through the POST |
-| `public/register.html` | `error_msg` | |
+| `public/events.html` | `events`, `categories`, `query`, `category`, `total_events` | Filtering is server-side; `total_events` is the unfiltered count |
+| `public/event_details.html` | `event`, `related` | No ticket state yet; the CTA links to sign-in |
+| `public/login.html` | `next`, `form_email`, `notice` | `notice` is set after a demo POST |
+| `public/register.html` | `next`, `form_name`, `form_email`, `notice` | Same demo POST behaviour |
 | `participant/dashboard.html` | `user`, `face_profile`, `sample_count`, `tickets`, `registrations` | |
 | `participant/enrollment.html` | `face_profile`, `sample_count`, `poses` | Poses are labels, not coordinates |
 | `participant/tickets.html` | `tickets` | |
@@ -43,13 +43,14 @@ Backend: `id`, `title`, `description`, `location`, `start_at`, `end_at`,
 `registration_open_at`, `registration_close_at`, `checkin_open_at`,
 `checkin_close_at`, `capacity`, `status`, `created_at`.
 
-Presentation-only fields currently on `DemoEvent`: `category`, `city`, `accent`,
-`registered_count`, `date_short`, `date_long`, `time_short`, `initial`,
-`capacity_pct`, `spots_left`, `is_sold_out`, `url`.
+Presentation-only fields currently on `DemoEvent`: `category`, `city`, `organizer`,
+`accent`, `registered_count`, `date_short`, `date_long`, `time_short`, `initial`,
+`capacity_pct`, `spots_left`, `is_sold_out`, `is_registration_open`, `schedule`,
+`url`.
 
-`registered_count` is a count of confirmed registrations; `accent` and `city`
-must be added to the event record or derived from a small presentation map. Do
-not hard-code them in the template.
+`registered_count` is a count of confirmed registrations; `accent`, `city`, and
+`organizer` must be added to the event record or derived from a small
+presentation map. Do not hard-code them in the template.
 
 ### Ticket
 

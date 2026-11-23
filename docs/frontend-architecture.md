@@ -45,6 +45,9 @@ The repository currently exposes:
 list_events(limit=None)
 featured_events(limit=3)
 get_event(event_id)
+list_categories()
+search_events(query="", category="")
+related_events(event_id, limit=3)
 user_for_role(role)
 list_tickets_for(user_id)
 list_checkin_logs(limit=None)
@@ -73,10 +76,20 @@ changes to the JavaScript callers.
 
 ## Routes
 
+Implemented (`frontend`, `events`, `auth` routers):
+
+| Route | Notes |
+| --- | --- |
+| `/` | Landing page |
+| `/events` | Catalog with `q` and `category` query params |
+| `/events/{id}` | Detail; unknown ids fall through to the designed 404 |
+| `/auth/login`, `/auth/register` | Presentation only; POST re-renders with a demo notice |
+
+Planned:
+
 | Area | Planned routes |
 | --- | --- |
-| Public | `/`, `/events`, `/events/{id}` |
-| Auth | `/auth/login`, `/auth/register`, `/auth/logout` |
+| Auth | `/auth/logout` |
 | Participant | `/participant/dashboard`, `/participant/enrollment`, `/participant/tickets`, `/participant/tickets/{id}` |
 | Operator | `/operator/dashboard`, `/operator/scanner`, `/operator/history` |
 | Admin | `/admin/dashboard`, `/admin/events`, `/admin/registrations`, `/admin/operators`, `/admin/analytics`, `/admin/model` |
