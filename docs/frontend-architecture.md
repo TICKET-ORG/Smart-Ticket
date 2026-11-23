@@ -70,11 +70,15 @@ face_profile_for(user_id)
 list_tickets_for(user_id)
 ticket_by_id(ticket_id)
 ticket_view(ticket_id)
+ticket_view_by_code(code)
 list_ticket_views_for(user_id)
 next_ticket_for(user_id)
 list_registrations_for(user_id)
 list_registration_views_for(user_id)
+operator_events()
 list_checkin_logs(limit=None)
+checkin_log_views(event_id=None, limit=None)
+checkin_summary(event_id=None)
 ```
 
 Add methods only when a page needs them. The live implementation should satisfy
@@ -100,7 +104,7 @@ changes to the JavaScript callers.
 
 ## Routes
 
-Implemented (`frontend`, `events`, `auth`, `participant` routers):
+Implemented (`frontend`, `events`, `auth`, `participant`, `operator` routers):
 
 | Route | Notes |
 | --- | --- |
@@ -113,17 +117,23 @@ Implemented (`frontend`, `events`, `auth`, `participant` routers):
 | `/participant/tickets` | Pass list for the demo account |
 | `/participant/tickets/{id}` | Pass sheet; other users' ids return 404 |
 | `/participant/tickets/{id}/qr.png` | QR image generated from the demo token |
+| `/operator/dashboard` | Assigned venues, gate totals, latest scans |
+| `/operator/scanner` | Two-stage check; `token` and `event` query params |
+| `/operator/history` | All scans; `event` query param filters by venue |
 
-Participant routes call `_guard_demo()` and return 404 when `DEMO_MODE=false`.
-Replace that guard with the real session dependency once auth lands; do not
-remove it while the demo account is the only source of identity.
+Participant and operator routes call `require_demo()` from `app/web/demo.py` and
+return 404 when `DEMO_MODE=false`. Replace that guard with the real session
+dependency once auth lands; do not remove it while the demo accounts are the
+only source of identity.
+
+The scanner's `token` param is a read-only demo lookup, not a check-in: it never
+consumes a pass and the face stage never produces a verdict.
 
 Planned:
 
 | Area | Planned routes |
 | --- | --- |
 | Auth | `/auth/logout` |
-| Operator | `/operator/dashboard`, `/operator/scanner`, `/operator/history` |
 | Admin | `/admin/dashboard`, `/admin/events`, `/admin/registrations`, `/admin/operators`, `/admin/analytics`, `/admin/model` |
 | Lab | `/cv-lab`, `/research/results` |
 | Dev | `/dev/styleguide` (404 in production) |
@@ -135,14 +145,16 @@ function and is imported from `app/static/js/app.js` or a page-level script.
 Keep DOM queries scoped to the component; no global jQuery-style helpers.
 
 Current modules: `core/nav.js` (public mobile menu), `core/app-shell.js`
-(sidebar and role switcher), and `pages/enrollment.js` (camera and pose
-capture). The enrollment module is self-initializing because it is loaded only
-by its page.
+(sidebar and role switcher), `pages/enrollment.js` (camera and pose capture),
+and `pages/scanner.js` (gate camera preview). Page modules are
+self-initializing because they are loaded only by their own page.
 
 Camera modules must handle permission denial, missing devices, and stream
 cleanup. Never upload a frame silently: show the session state and the result.
 The enrollment page draws frames to a local canvas, keeps them as data URLs in
-the DOM, and stops tracks on `pagehide`.
+the DOM, and stops tracks on `pagehide`. The scanner page never captures or
+sends anything at all — its capture button only reveals the "not connected"
+notice.
 
 ## CSS
 
@@ -154,10 +166,12 @@ redefine tokens. Use BEM-ish class names and data attributes for state.
 
 `pytest` smoke tests render every page, check demo-mode gating, and touch the
 main static assets. `tests/test_participant.py` covers the pass joins, the
-unknown-ticket 404, and the PNG response. Add tests when a route gains branching
-behaviour. Browser automation is reserved for the enrollment and scanner flows,
-where a camera mock is required; the capture UI has been checked with Chrome's
-fake media stream and must stay free of non-GET requests.
+unknown-ticket 404, and the PNG response. `tests/test_operator.py` covers the
+venue filter, token lookup (including used and unknown tokens), the scan summary
+counts, and the guarantee that a lookup never mutates a pass. Add tests when a
+route gains branching behaviour. Browser automation is reserved for the
+enrollment and scanner flows, where a camera mock is required; both have been
+checked with Chrome's fake media stream and must stay free of non-GET requests.
 
 ## Conventions
 
