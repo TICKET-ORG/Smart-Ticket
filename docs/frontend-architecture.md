@@ -33,11 +33,27 @@ Browser
                  └─ base.html → components → page blocks
 ```
 
+## Application shell
+
+Public pages extend `base.html`. Signed-in pages extend `base_app.html`, which
+overrides the `shell` block and adds a paper sidebar, a sticky topbar, and the
+accent demo strip. Sidebar items come from `app/web/navigation.py`; the role
+switcher reads `DEMO_ROLES` and marks roles without routes as disabled so the
+demo never links to a missing page.
+
+The mobile sidebar is a small state machine in `core/app-shell.js`
+(`data-sidebar-open` on the shell, scrim click and Escape close, focus returns
+to the toggle). Page controllers pass `nav_role`, `page_title`, `page_kicker`,
+and `active_page`; `templating.py` supplies empty defaults for public pages.
+
 ## Data contract
 
-`DemoEvent`, `DemoTicket`, `DemoUser`, and `DemoCheckinLog` mirror the field
-names used by the backend ORM. Keep that invariant: if the backend adds
-`Event.slug`, add it to the fixture too rather than renaming it in the template.
+`DemoEvent`, `DemoTicket`, `DemoUser`, `DemoFaceProfile`, `DemoRegistration`, and
+`DemoCheckinLog` mirror the field names used by the backend ORM. Ticket and
+registration views (`DemoTicketView`, `DemoRegistrationView`) are the joined
+shapes pages render; they mirror ORM relationships rather than duplicating
+columns. Keep that invariant: if the backend adds `Event.slug`, add it to the
+fixture too rather than renaming it in the template.
 
 The repository currently exposes:
 
@@ -49,7 +65,15 @@ list_categories()
 search_events(query="", category="")
 related_events(event_id, limit=3)
 user_for_role(role)
+get_user(user_id)
+face_profile_for(user_id)
 list_tickets_for(user_id)
+ticket_by_id(ticket_id)
+ticket_view(ticket_id)
+list_ticket_views_for(user_id)
+next_ticket_for(user_id)
+list_registrations_for(user_id)
+list_registration_views_for(user_id)
 list_checkin_logs(limit=None)
 ```
 
@@ -76,7 +100,7 @@ changes to the JavaScript callers.
 
 ## Routes
 
-Implemented (`frontend`, `events`, `auth` routers):
+Implemented (`frontend`, `events`, `auth`, `participant` routers):
 
 | Route | Notes |
 | --- | --- |
@@ -84,13 +108,21 @@ Implemented (`frontend`, `events`, `auth` routers):
 | `/events` | Catalog with `q` and `category` query params |
 | `/events/{id}` | Detail; unknown ids fall through to the designed 404 |
 | `/auth/login`, `/auth/register` | Presentation only; POST re-renders with a demo notice |
+| `/participant/dashboard` | Participant overview; demo-only guard |
+| `/participant/enrollment` | Camera capture UI; frames never leave the page |
+| `/participant/tickets` | Pass list for the demo account |
+| `/participant/tickets/{id}` | Pass sheet; other users' ids return 404 |
+| `/participant/tickets/{id}/qr.png` | QR image generated from the demo token |
+
+Participant routes call `_guard_demo()` and return 404 when `DEMO_MODE=false`.
+Replace that guard with the real session dependency once auth lands; do not
+remove it while the demo account is the only source of identity.
 
 Planned:
 
 | Area | Planned routes |
 | --- | --- |
 | Auth | `/auth/logout` |
-| Participant | `/participant/dashboard`, `/participant/enrollment`, `/participant/tickets`, `/participant/tickets/{id}` |
 | Operator | `/operator/dashboard`, `/operator/scanner`, `/operator/history` |
 | Admin | `/admin/dashboard`, `/admin/events`, `/admin/registrations`, `/admin/operators`, `/admin/analytics`, `/admin/model` |
 | Lab | `/cv-lab`, `/research/results` |
@@ -102,8 +134,15 @@ Use ES modules and `type="module"` scripts. Each module exports an `init…`
 function and is imported from `app/static/js/app.js` or a page-level script.
 Keep DOM queries scoped to the component; no global jQuery-style helpers.
 
+Current modules: `core/nav.js` (public mobile menu), `core/app-shell.js`
+(sidebar and role switcher), and `pages/enrollment.js` (camera and pose
+capture). The enrollment module is self-initializing because it is loaded only
+by its page.
+
 Camera modules must handle permission denial, missing devices, and stream
 cleanup. Never upload a frame silently: show the session state and the result.
+The enrollment page draws frames to a local canvas, keeps them as data URLs in
+the DOM, and stops tracks on `pagehide`.
 
 ## CSS
 
@@ -113,9 +152,12 @@ redefine tokens. Use BEM-ish class names and data attributes for state.
 
 ## Testing
 
-`pytest` smoke tests render every page and touch the main static assets. Add
-tests when a route gains branching behaviour. Browser automation is reserved for
-the enrollment and scanner flows, where a camera mock is required.
+`pytest` smoke tests render every page, check demo-mode gating, and touch the
+main static assets. `tests/test_participant.py` covers the pass joins, the
+unknown-ticket 404, and the PNG response. Add tests when a route gains branching
+behaviour. Browser automation is reserved for the enrollment and scanner flows,
+where a camera mock is required; the capture UI has been checked with Chrome's
+fake media stream and must stay free of non-GET requests.
 
 ## Conventions
 

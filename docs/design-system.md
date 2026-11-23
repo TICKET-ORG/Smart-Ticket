@@ -108,6 +108,25 @@ and a paper column with the form. Fields keep the standard label-above-input
 pattern. Because there is no session layer yet, a submit re-renders the page
 with a demo notice instead of pretending to sign anyone in.
 
+### Application shell
+
+Signed-in pages keep the paper palette but switch to a two-column frame: a
+268px sidebar with the brand, role label, and nav items, and a main column with
+a sticky topbar. A thin accent strip at the top of the main column carries the
+demo notice; it is the only persistent accent on the screen.
+
+Nav links use a full-width hover fill and an inset 2px accent bar for the
+current page. The role switcher is a native `details` element: avatar, name,
+role, and chevron, with a menu that lists available demo roles and shows future
+roles disabled. On small screens the sidebar becomes an overlay with a scrim;
+the menu button is the only control in the topbar.
+
+Page headers pair an eyebrow with a serif title, and sections are separated by
+hairlines rather than nested cards. Metrics sit in one bordered row with
+internal dividers, so a dashboard does not become a wall of boxes. Tables keep
+the same hairline style; below 700px rows stack into labelled blocks so the
+action link never scrolls off-screen.
+
 ### Empty states
 
 State what happened, then the next action. An empty table gets a message, not a
