@@ -1,0 +1,209 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import status_badge with context %}
+
+{% block title %}Scanner — SmartTicket{% endblock %}
+{% block description %}Two-stage gate check: scan the pass, then verify the holder.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/operator.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page app-page--narrow">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Gate scanner</p>
+      <h1>One pass at a time.</h1>
+      <p>
+        Read the token, confirm the holder, then let the camera compare the
+        live frame with the enrolled profile.
+      </p>
+    </div>
+    <div class="app-head__actions">
+      <a class="btn btn--outline" href="/operator/dashboard">
+        {{ icon("arrow-left") }}
+        Overview
+      </a>
+    </div>
+  </header>
+
+  <ol class="stepper" aria-label="Check-in stages">
+    <li class="stepper__item" data-state="{{ 'done' if pass_view else 'active' }}">
+      <span class="mono">01</span> Pass
+    </li>
+    <li class="stepper__item" data-state="{{ 'active' if pass_view else 'idle' }}">
+      <span class="mono">02</span> Face
+    </li>
+    <li class="stepper__item" data-state="idle">
+      <span class="mono">03</span> Verdict
+    </li>
+  </ol>
+
+  <div class="scan-layout">
+    <section class="scan-panel" aria-labelledby="pass-stage-heading">
+      <div class="scan-panel__head">
+        <span class="scan-panel__index">01</span>
+        <div>
+          <h2 id="pass-stage-heading">Read the pass</h2>
+          <p>Paste the token printed under the QR, or scan it with the reader.</p>
+        </div>
+      </div>
+
+      <form class="scan-form" method="get" action="/operator/scanner">
+        <div class="field">
+          <label class="label" for="scan-token">Manual entry token</label>
+          <input
+            class="input mono"
+            id="scan-token"
+            name="token"
+            type="text"
+            value="{{ token }}"
+            placeholder="ST-2026-XXXX-XXXX"
+            autocomplete="off"
+            spellcheck="false"
+          >
+        </div>
+
+        <div class="field">
+          <label class="label" for="scan-event">Venue</label>
+          <select class="select" id="scan-event" name="event">
+            <option value="">Any assigned venue</option>
+            {% for item in events %}
+              <option value="{{ item.id }}" {% if event and event.id == item.id %}selected{% endif %}>
+                {{ item.title }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button class="btn btn--primary" type="submit">
+          Look up pass
+          {{ icon("arrow-right") }}
+        </button>
+      </form>
+
+      {% if lookup_failed %}
+        <div class="alert alert--warning" role="alert">
+          {{ icon("alert-triangle") }}
+          <span>
+            No demo pass matches <code class="mono">{{ token }}</code>. Check the
+            token, or scan the QR with the reader.
+          </span>
+        </div>
+      {% endif %}
+
+      {% if pass_view %}
+        <article class="gate-pass">
+          <div class="gate-pass__head">
+            <span class="gate-pass__kicker">Pass found</span>
+            {{ status_badge(pass_view.status) }}
+          </div>
+
+          <h2 class="gate-pass__title">{{ pass_view.event.title }}</h2>
+
+          <dl class="gate-pass__facts">
+            <div>
+              <dt>Holder</dt>
+              <dd>{{ pass_view.user.name }}</dd>
+            </div>
+            <div>
+              <dt>Seat</dt>
+              <dd>{{ pass_view.seat }}</dd>
+            </div>
+            <div>
+              <dt>Event</dt>
+              <dd>{{ pass_view.event.date_long }}</dd>
+            </div>
+            <div>
+              <dt>Token</dt>
+              <dd class="mono">{{ pass_view.code }}</dd>
+            </div>
+          </dl>
+
+          {% if pass_view.is_used %}
+            <div class="alert alert--danger">
+              {{ icon("x") }}
+              <span>
+                This pass was already used on
+                {{ pass_view.used_at|date_short }} at {{ pass_view.used_at|time }}.
+                Do not admit it again.
+              </span>
+            </div>
+          {% else %}
+            <p class="demo-note">Demo lookup · the pass is not consumed</p>
+          {% endif %}
+        </article>
+      {% endif %}
+    </section>
+
+    <section class="scan-panel scan-panel--dark" data-gate aria-labelledby="face-stage-heading">
+      <div class="scan-panel__head scan-panel__head--on-dark">
+        <span class="scan-panel__index">02</span>
+        <div>
+          <h2 id="face-stage-heading">Verify the holder</h2>
+          <p>Frame the face inside the brackets, then capture one frame.</p>
+        </div>
+      </div>
+
+      <div class="scan-frame scan-frame--gate">
+        <video class="scan-frame__video" data-gate-video autoplay playsinline muted hidden></video>
+
+        <div class="scan-frame__label" data-gate-placeholder>
+          {{ icon("scan-face") }}
+          <span>Camera idle</span>
+        </div>
+
+        <span class="scan-frame__corner scan-frame__corner--tl" aria-hidden="true"></span>
+        <span class="scan-frame__corner scan-frame__corner--tr" aria-hidden="true"></span>
+        <span class="scan-frame__corner scan-frame__corner--bl" aria-hidden="true"></span>
+        <span class="scan-frame__corner scan-frame__corner--br" aria-hidden="true"></span>
+      </div>
+
+      <div class="scan-actions">
+        <button class="btn btn--on-dark" type="button" data-gate-start>
+          Start camera
+        </button>
+        <button class="btn btn--accent" type="button" data-gate-capture disabled>
+          Capture frame
+        </button>
+      </div>
+
+      <p class="scan-status" data-gate-status role="status" aria-live="polite">
+        The camera only previews. Nothing is uploaded from this page.
+      </p>
+
+      <div class="alert alert--info" data-gate-notice role="status" hidden>
+        {{ icon("info") }}
+        <span>
+          Verification is not connected. No match was run, no verdict was
+          produced, and the pass was left untouched.
+        </span>
+      </div>
+    </section>
+  </div>
+
+  <section class="scan-notes" aria-labelledby="gate-notes-heading">
+    <h2 id="gate-notes-heading">Gate rules</h2>
+    <dl class="fact-list">
+      <div>
+        <dt>One token, one attempt</dt>
+        <dd>A pass is consumed only after a match</dd>
+      </div>
+      <div>
+        <dt>Failed match</dt>
+        <dd>Pass stays active; escalate to a supervisor</dd>
+      </div>
+      <div>
+        <dt>Transfers</dt>
+        <dd>Not allowed on any pass</dd>
+      </div>
+    </dl>
+    <p class="demo-note">Demo scanner · no camera frame leaves the browser</p>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="module" src="{{ url_for('static', path='/js/pages/scanner.js') }}"></script>
+{% endblock %}
