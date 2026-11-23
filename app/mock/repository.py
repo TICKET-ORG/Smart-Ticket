@@ -41,6 +41,46 @@ class DemoRepository:
     def get_event(self, event_id: str) -> DemoEvent | None:
         return next((event for event in self._events if event.id == event_id), None)
 
+    def list_categories(self) -> list[str]:
+        return sorted({event.category for event in self._events})
+
+    def search_events(self, query: str = "", category: str = "") -> list[DemoEvent]:
+        """Filter the catalog. Live data will move this into the query layer."""
+
+        needle = query.strip().lower()
+        wanted = category.strip().lower()
+
+        events = self._events
+        if wanted:
+            events = [event for event in events if event.category.lower() == wanted]
+
+        if needle:
+            events = [
+                event
+                for event in events
+                if needle
+                in " ".join(
+                    (
+                        event.title,
+                        event.description,
+                        event.category,
+                        event.location,
+                        event.city,
+                    )
+                ).lower()
+            ]
+
+        return list(events)
+
+    def related_events(self, event_id: str, limit: int = 3) -> list[DemoEvent]:
+        """Prefer the same category, then fill with the nearest dates."""
+
+        current = self.get_event(event_id)
+        others = [event for event in self._events if event.id != event_id]
+        if current is not None:
+            others.sort(key=lambda event: (event.category != current.category, event.start_at))
+        return others[:limit]
+
     def user_for_role(self, role: str) -> DemoUser | None:
         return next((user for user in self._users.values() if user.role == role), None)
 

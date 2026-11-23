@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import event_card with context %}
+
+{% block title %}Events — SmartTicket{% endblock %}
+{% block description %}The SmartTicket calendar: concerts, conferences, festivals, and readings with face-verified entry.{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/events.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div class="container">
+    <p class="eyebrow">Events</p>
+    <h1>The calendar.</h1>
+    <p>
+      Every pass is checked twice at the door: the token, then the face.
+      Pick a night and enroll once.
+    </p>
+  </div>
+</div>
+
+<section class="section section--tight">
+  <div class="container">
+    <form class="filter-bar" method="get" action="/events" role="search">
+      <div class="search-field">
+        <label class="visually-hidden" for="event-search">Search events</label>
+        <input
+          class="search-field__input"
+          id="event-search"
+          type="search"
+          name="q"
+          value="{{ query }}"
+          placeholder="Search by name, venue, or city"
+        >
+        {% if category %}
+          <input type="hidden" name="category" value="{{ category }}">
+        {% endif %}
+        <button class="search-field__submit" type="submit" aria-label="Search events">
+          {{ icon("search") }}
+        </button>
+      </div>
+
+      <p class="result-count" aria-live="polite">
+        {{ "%02d"|format(events|length) }} / {{ "%02d"|format(total_events) }} events
+      </p>
+    </form>
+
+    <nav class="chip-row" aria-label="Filter by category">
+      <a
+        class="chip"
+        href="/events{% if query %}?q={{ query|urlencode }}{% endif %}"
+        {% if not category %}aria-current="true"{% endif %}
+      >All</a>
+      {% for name in categories %}
+        <a
+          class="chip"
+          href="/events?category={{ name|urlencode }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}"
+          {% if category|lower == name|lower %}aria-current="true"{% endif %}
+        >{{ name }}</a>
+      {% endfor %}
+    </nav>
+
+    {% if events %}
+      <div class="event-grid">
+        {% for event in events %}
+          {{ event_card(event) }}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state catalog-empty">
+        {{ icon("search") }}
+        <h2>Nothing on the calendar matches that.</h2>
+        <p>
+          Try a different name, venue, or city — or clear the filters and
+          browse the full list.
+        </p>
+        <div class="cluster" style="justify-content: center; margin-top: 1.25rem;">
+          <a class="btn btn--outline" href="/events">Clear filters</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

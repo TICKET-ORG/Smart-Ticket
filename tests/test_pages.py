@@ -44,6 +44,7 @@ def test_static_assets_are_served() -> None:
         "/static/css/layout.css",
         "/static/css/components.css",
         "/static/css/pages/landing.css",
+        "/static/css/pages/events.css",
         "/static/js/app.js",
         "/static/js/core/nav.js",
         "/static/images/icons.svg",

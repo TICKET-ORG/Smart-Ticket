@@ -205,40 +205,12 @@
 
 /* Events ----------------------------------------------------------- */
 
-.text-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding-bottom: 0.15rem;
-  border-bottom: 1px solid var(--line-strong);
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.text-link:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.text-link .icon {
-  width: 0.9rem;
-  height: 0.9rem;
-}
-
 .section-head__aside {
   flex: none;
   color: var(--faint);
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.event-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-lg);
 }
 
 /* How it works ----------------------------------------------------- */
@@ -550,10 +522,6 @@
     display: none;
   }
 
-  .event-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .method,
   .privacy {
     grid-template-columns: 1fr;
@@ -569,10 +537,6 @@
 }
 
 @media (max-width: 760px) {
-  .event-grid {
-    grid-template-columns: 1fr;
-  }
-
   .steps {
     grid-template-columns: 1fr;
   }

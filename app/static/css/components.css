@@ -507,6 +507,36 @@
   transform: translateX(3px);
 }
 
+/* Event grid and text link ----------------------------------------- */
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-bottom: 0.15rem;
+  border-bottom: 1px solid var(--line-strong);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.text-link .icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
 /* Ticket stub ------------------------------------------------------ */
 
 .ticket-stub {
@@ -921,6 +951,98 @@
   letter-spacing: 0.02em;
 }
 
+/* Search field and filter chips ------------------------------------ */
+
+.search-field {
+  display: flex;
+  align-items: center;
+  width: min(100%, 23rem);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  transition: border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.search-field:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgb(19 18 16 / 8%);
+}
+
+.search-field__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  background: transparent;
+  font-size: 0.88rem;
+}
+
+.search-field__input:focus {
+  outline: none;
+}
+
+.search-field__input::placeholder {
+  color: var(--faint);
+}
+
+.search-field__submit {
+  display: grid;
+  place-items: center;
+  width: 2.55rem;
+  align-self: stretch;
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.search-field__submit:hover {
+  color: var(--accent);
+}
+
+.search-field__submit .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.result-count {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-block: var(--space-md) var(--space-xl);
+}
+
+.chip {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink-2);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.chip[aria-current="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
 /* Misc ------------------------------------------------------------- */
 
 .kbd {
@@ -976,6 +1098,18 @@
   height: 6px;
   border-radius: 50%;
   background: var(--amber);
+}
+
+@media (max-width: 1024px) {
+  .event-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
