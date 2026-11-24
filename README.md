@@ -8,11 +8,12 @@ The recognition pipeline (HOG descriptor, K-NN matching, PSO-tuned threshold)
 runs on the Python backend. This repository is being built frontend-first and
 will be wired to the backend data layer as it lands.
 
-> **Status — PR 4 / operator workspace.** The application shell, design system,
+> **Status — PR 5 / admin workspace.** The application shell, design system,
 > landing page, event catalog, event detail, account screens, component style
 > guide, demo data repository, participant workspace (overview, face
-> enrollment, passes), and operator workspace (overview, gate scanner, scan
-> history) are in place. Admin and CV lab screens are next.
+> enrollment, passes), operator workspace (overview, gate scanner, scan
+> history), and admin workspace (overview, events, registrations) are in place.
+> The CV lab and research screens are next.
 
 ## Frontend scope
 
@@ -35,6 +36,11 @@ interactive flows stop at the presentation layer:
   left untouched.
 - Scan history is hand-written sample data, labelled as such on the page. It is
   not output from a model run.
+- The admin event form validates in the browser, then re-renders with a demo
+  notice. Nothing is written: the event list is the same before and after a
+  submit.
+- The admin registration roster is read-only sample data. Filters narrow the
+  rows; no row can be confirmed, cancelled, or refunded from this build.
 
 Connecting the forms and scanner to the backend happens in a later pass, once
 the API contract in `docs/integration-contract.md` is implemented.
@@ -76,6 +82,9 @@ Useful routes:
 | `/operator/dashboard` | Assigned venues, gate totals, latest scans |
 | `/operator/scanner` | Two-stage gate check; camera preview only |
 | `/operator/history` | Every recorded scan, filterable by venue |
+| `/admin/dashboard` | Programme totals, next events, latest gate activity |
+| `/admin/events` | Every event, capacity, and the create form (preview) |
+| `/admin/registrations` | Registration roster, filterable by venue and status |
 | `/dev/styleguide` | Design tokens and component catalogue |
 | `/healthz` | Application health check |
 | `/api/docs` | OpenAPI docs (development only) |
@@ -86,8 +95,8 @@ Useful routes:
 `app/mock/repository.py`. Fixtures are shaped like the backend ORM models so
 templates do not need to change when the real repository replaces the demo one.
 
-The participant and operator routes are gated on this flag and return 404 when
-it is off. There is no session guard yet, so exposing them in a non-demo
+The participant, operator, and admin routes are gated on this flag and return
+404 when it is off. There is no session guard yet, so exposing them in a non-demo
 deployment would show one account's data to every visitor.
 
 To move to live data, implement the same repository methods against the backend
@@ -119,6 +128,7 @@ app/
 │   ├── public/              # Landing, catalog, event detail, account screens
 │   ├── participant/         # Overview, enrollment, passes
 │   ├── operator/            # Overview, gate scanner, scan history
+│   ├── admin/               # Overview, events, registrations
 │   ├── dev/                 # Style guide (development only)
 │   └── errors/
 └── static/
@@ -155,8 +165,9 @@ Current branch plan:
 2. Event catalog, event detail, and account screens
 3. Participant dashboard, enrollment, tickets
 4. Operator dashboard, gate scanner, scan history
-5. Admin panels and CV lab shell
-6. Polish, accessibility audit, integration
+5. Admin dashboard, events, registrations
+6. CV lab and research screens
+7. Polish, accessibility audit, integration
 
 ## Design direction
 

@@ -79,6 +79,12 @@ operator_events()
 list_checkin_logs(limit=None)
 checkin_log_views(event_id=None, limit=None)
 checkin_summary(event_id=None)
+upcoming_events(limit=3)
+events_with_registrations()
+all_registration_views(event_id=None, status=None)
+admin_summary()
+enrolled_profile_count()
+participant_count()
 ```
 
 Add methods only when a page needs them. The live implementation should satisfy
@@ -104,7 +110,8 @@ changes to the JavaScript callers.
 
 ## Routes
 
-Implemented (`frontend`, `events`, `auth`, `participant`, `operator` routers):
+Implemented (`frontend`, `events`, `auth`, `participant`, `operator`, `admin`
+routers):
 
 | Route | Notes |
 | --- | --- |
@@ -120,9 +127,12 @@ Implemented (`frontend`, `events`, `auth`, `participant`, `operator` routers):
 | `/operator/dashboard` | Assigned venues, gate totals, latest scans |
 | `/operator/scanner` | Two-stage check; `token` and `event` query params |
 | `/operator/history` | All scans; `event` query param filters by venue |
+| `/admin/dashboard` | Programme totals, next events, latest gate activity |
+| `/admin/events` | Event table plus the create form; POST re-renders with a notice |
+| `/admin/registrations` | Roster with `event` and `status` query params |
 
-Participant and operator routes call `require_demo()` from `app/web/demo.py` and
-return 404 when `DEMO_MODE=false`. Replace that guard with the real session
+Participant, operator, and admin routes call `require_demo()` from
+`app/web/demo.py` and return 404 when `DEMO_MODE=false`. Replace that guard with the real session
 dependency once auth lands; do not remove it while the demo accounts are the
 only source of identity.
 
@@ -134,7 +144,7 @@ Planned:
 | Area | Planned routes |
 | --- | --- |
 | Auth | `/auth/logout` |
-| Admin | `/admin/dashboard`, `/admin/events`, `/admin/registrations`, `/admin/operators`, `/admin/analytics`, `/admin/model` |
+| Admin | `/admin/operators`, `/admin/analytics`, `/admin/model` |
 | Lab | `/cv-lab`, `/research/results` |
 | Dev | `/dev/styleguide` (404 in production) |
 
@@ -168,7 +178,10 @@ redefine tokens. Use BEM-ish class names and data attributes for state.
 main static assets. `tests/test_participant.py` covers the pass joins, the
 unknown-ticket 404, and the PNG response. `tests/test_operator.py` covers the
 venue filter, token lookup (including used and unknown tokens), the scan summary
-counts, and the guarantee that a lookup never mutates a pass. Add tests when a
+counts, and the guarantee that a lookup never mutates a pass.
+`tests/test_admin.py` covers the programme totals, the roster filters, the
+unassigned-event and unknown-status fallbacks, and the guarantee that the event
+form writes nothing. Add tests when a
 route gains branching behaviour. Browser automation is reserved for the
 enrollment and scanner flows, where a camera mock is required; both have been
 checked with Chrome's fake media stream and must stay free of non-GET requests.

@@ -17,15 +17,16 @@ will call. Keep it updated when a page changes its context.
 
 ## Demo identity
 
-There is no session layer yet. Participant routes render the single fixture user
-returned by `repository.user_for_role("participant")` and are gated on
-`DEMO_MODE`, returning 404 otherwise. The topbar role switcher is a demo control,
+There is no session layer yet. Each workspace renders the fixture user returned
+by `repository.user_for_role(<role>)` and is gated on `DEMO_MODE`, returning 404
+otherwise. The topbar role switcher is a demo control,
 not an authorization boundary.
 
 When auth lands:
 
 - Replace `require_demo()` in `app/web/demo.py` with a session dependency that
-  resolves the signed-in user; participant and operator routes keep calling it.
+  resolves the signed-in user; participant, operator, and admin routes keep
+  calling it.
 - Drop `user_for_role()` from page controllers; pass the session user instead.
 - Replace `repository.operator_events()` with the operator's real assignment
   query. The demo constant `OPERATOR_EVENT_IDS` exists only to mimic that.
@@ -50,8 +51,9 @@ When auth lands:
 | `operator/dashboard.html` | `user`, `events`, `summary`, `recent_logs` | Only assigned events; `summary` counts the demo scan log |
 | `operator/scanner.html` | `user`, `events`, `event`, `token`, `pass_view`, `lookup_failed` | `pass_view` is a read-only lookup, never a check-in |
 | `operator/history.html` | `user`, `events`, `event`, `logs`, `summary` | Filtering happens server-side through `?event=` |
-| `admin/dashboard.html` | `metrics`, `logs`, `model_info`, `gallery_count` | No invented analytics |
-| `admin/events.html` | `events` | |
+| `admin/dashboard.html` | `user`, `summary`, `upcoming`, `recent_logs`, `enrolled_profiles`, `participant_count`, `event_count` | `summary` counts fixture records, not the aggregate seat numbers on the event cards |
+| `admin/events.html` | `user`, `events`, `form`, `notice`, `enrolled_profiles` | `form` echoes the submitted values back; `notice` is set after a demo POST |
+| `admin/registrations.html` | `user`, `events`, `event`, `status`, `rows`, `confirmed_count`, `cancelled_count`, `summary` | Filtering happens server-side through `?event=` and `?status=` |
 | `cv_lab/index.html` | `pipeline_report` | Only after the backend returns real values |
 | `cv_lab/experiments.html` | `report` | Rendered from `experiment_report.json` |
 
@@ -96,6 +98,14 @@ browser.
 Backend `Registration`: `id`, `user_id`, `event_id`, `status`, `created_at`,
 `ticket_id`. The dashboard joins it with the event and the ticket.
 
+The admin roster uses `DemoAdminRegistrationView`, which joins the registration
+to its holder, event, and pass. `DemoAdminSummary` carries the record counts the
+overview renders (`events`, `registrations`, `confirmed`, `cancelled`, `passes`,
+`granted_entries`, `cancelled_rate`). It deliberately does not reuse the
+`registered_count` totals printed on the event cards: those are aggregate demo
+numbers, and mixing them with row-level counts would make the two pages
+disagree. Once the backend owns registrations, derive both from the same table.
+
 ### User
 
 `id`, `name`, `email`, `role` (`participant`, `operator`, `admin`), plus
@@ -130,7 +140,8 @@ distance to the demo fixture.
 | Check-in | `POST /api/checkin/validate-qr` | `qr_token` | Ticket summary + session id + expiry |
 | Check-in | `POST /api/checkin/verify-face` | `session_id`, `image_base64` | Verdict, distance, threshold, reason |
 | CV lab | `POST /api/cv-lab/inspect` | `image_base64` | Visualization maps + ML decision |
-| Admin | `POST /admin/events/new` | event form | Redirect or validation error |
+| Admin | `POST /admin/events` | `title`, `location`, `description`, `start_at`, `end_at`, `capacity` | Redirect to `/admin/events` or re-render with field errors |
+| Admin | `PATCH /admin/registrations/{id}` | `status` | Updated registration; requires an admin session |
 
 All state-changing browser requests must carry the session cookie and, in
 production, a CSRF token. The frontend will read the CSRF token from a meta tag

@@ -102,6 +102,19 @@ its gate window, and a single scan link. Scan history keeps the shared table
 style and is labelled as sample data underneath. Metrics stay in one bordered
 row so gate totals do not read like a sales dashboard.
 
+### Admin dashboard
+
+The programme list is the same hairline row pattern as the operator venue list,
+extended with a capacity bar per row: date, event, then how full it is. The
+right rail is one card of record counts, not a chart — there is no real
+analytics source yet, so nothing here is allowed to look like a trend.
+
+The registration roster uses the shared table plus two chip rows: venue, then
+status. Chips in a second row stay visually subordinate because the venue is the
+coarser filter. The event form is a plain two/three-column field grid inside one
+hairline panel; its submit button is styled like any other, and the demo notice
+appears at the top of the form rather than in a modal.
+
 ### Catalog controls
 
 Search is a single bordered field with an icon submit button; categories are
@@ -131,8 +144,8 @@ demo notice; it is the only persistent accent on the screen.
 
 Nav links use a full-width hover fill and an inset 2px accent bar for the
 current page. The role switcher is a native `details` element: avatar, name,
-role, and chevron, with a menu that lists available demo roles and shows future
-roles disabled. On small screens the sidebar becomes an overlay with a scrim;
+role, and chevron, with a menu that lists every implemented demo role; roles
+without pages would appear disabled. On small screens the sidebar becomes an overlay with a scrim;
 the menu button is the only control in the topbar.
 
 Page headers pair an eyebrow with a serif title, and sections are separated by
