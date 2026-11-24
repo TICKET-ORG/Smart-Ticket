@@ -88,6 +88,20 @@ info, accent. Status is text first. The dot is decorative and hidden on
 Dark frame, corner brackets, one instruction line. The result screen is
 full-bleed, large type, no confetti. Use `aria-live="polite"` for the verdict.
 
+The implemented gate screen pairs a paper "read the pass" panel with an ink
+"verify the holder" panel, so the two stages read as one sequence instead of a
+stack of cards. A stepper above tracks pass → face → verdict. The camera stage is
+ink with an accent-outlined frame; the pass card stays on paper because it is
+data, not hardware. Nothing on this screen may display a match until the backend
+returns one.
+
+### Operator dashboard
+
+Assigned venues are one hairline list; each row carries a serif date, the venue,
+its gate window, and a single scan link. Scan history keeps the shared table
+style and is labelled as sample data underneath. Metrics stay in one bordered
+row so gate totals do not read like a sales dashboard.
+
 ### Catalog controls
 
 Search is a single bordered field with an icon submit button; categories are

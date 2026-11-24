@@ -1,0 +1,330 @@
+/* ------------------------------------------------------------------
+   Operator workspace: venue list, gate scanner, scan history
+   ------------------------------------------------------------------ */
+
+/* Venue list ------------------------------------------------------- */
+
+.venue-list {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  list-style: none;
+  overflow: hidden;
+}
+
+.venue-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: clamp(0.9rem, 2vw, 1.5rem);
+  align-items: center;
+  padding: 1rem 1.25rem;
+}
+
+.venue-row + .venue-row {
+  border-top: 1px solid var(--line);
+}
+
+.venue-row__date {
+  display: grid;
+  justify-items: center;
+  gap: 0.05rem;
+  padding-right: clamp(0.9rem, 2vw, 1.5rem);
+  border-right: 1px solid var(--line);
+}
+
+.venue-row__day {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.95;
+}
+
+.venue-row__month {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.venue-row__body {
+  min-width: 0;
+}
+
+.venue-row__body h3 {
+  font-family: var(--font-serif);
+  font-size: var(--step-1);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.venue-row__body h3 a {
+  text-decoration: none;
+}
+
+.venue-row__body h3 a:hover {
+  color: var(--accent);
+}
+
+.venue-row__meta {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.venue-row__side {
+  display: grid;
+  justify-items: end;
+  gap: 0.55rem;
+  text-align: right;
+}
+
+.log-detail {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.metric-row--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Scanner ---------------------------------------------------------- */
+
+.scan-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+}
+
+.scan-panel {
+  display: grid;
+  gap: 1.15rem;
+  padding: clamp(1.1rem, 2.5vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+}
+
+.scan-panel--dark {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.scan-panel__head {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.scan-panel__index {
+  flex: none;
+  padding-top: 0.2rem;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+
+.scan-panel__head h2 {
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.scan-panel__head p {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.scan-panel__head--on-dark p {
+  color: #a8a193;
+}
+
+.scan-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.scan-form .btn {
+  justify-self: start;
+}
+
+/* Loaded pass ------------------------------------------------------ */
+
+.gate-pass {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+
+.gate-pass__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.gate-pass__kicker {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.gate-pass__title {
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.gate-pass__facts {
+  display: grid;
+  gap: 0.45rem;
+  padding-block: 0.75rem;
+  border-block: 1px solid var(--line);
+}
+
+.gate-pass__facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.gate-pass__facts dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.gate-pass__facts dd {
+  color: var(--ink-2);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Camera stage ----------------------------------------------------- */
+
+.scan-frame--gate {
+  aspect-ratio: 4 / 3;
+  background: #100f0d;
+}
+
+.scan-frame__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.scan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.scan-status {
+  color: #a8a193;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.scan-status[data-tone="error"] {
+  color: #e8a99f;
+}
+
+.scan-status[data-tone="ready"] {
+  color: #9ecdb8;
+}
+
+.scan-panel--dark .alert {
+  border-color: rgb(246 243 236 / 18%);
+  border-left-color: var(--blue);
+  background: rgb(52 72 107 / 22%);
+  color: #d9d3c6;
+}
+
+.scan-panel--dark .demo-note {
+  color: #8f887a;
+}
+
+/* Gate notes ------------------------------------------------------- */
+
+.scan-notes {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 640px;
+}
+
+.scan-notes h2 {
+  font-family: var(--font-serif);
+  font-size: var(--step-1);
+  font-weight: 400;
+}
+
+.scan-notes .fact-list {
+  padding-block: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+  padding-top: 0.75rem;
+}
+
+.scan-notes .fact-list > div {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Responsive ------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .scan-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .venue-row {
+    grid-template-columns: 56px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .venue-row__date {
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .venue-row__day {
+    font-size: 1.5rem;
+  }
+
+  .venue-row__side {
+    grid-column: 2;
+    justify-items: start;
+    gap: 0.4rem;
+    text-align: left;
+  }
+
+  .metric-row--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .scan-form .btn {
+    justify-self: stretch;
+  }
+}

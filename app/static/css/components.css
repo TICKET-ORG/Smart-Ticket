@@ -90,6 +90,18 @@
   color: var(--ink);
 }
 
+.btn--on-dark {
+  --btn-bg: transparent;
+  --btn-fg: var(--paper);
+  --btn-border: rgb(246 243 236 / 28%);
+}
+
+.btn--on-dark:hover {
+  --btn-border: var(--paper);
+  --btn-bg: rgb(246 243 236 / 8%);
+  color: var(--paper);
+}
+
 .btn--sm {
   min-height: 2.1rem;
   padding: 0.35rem 0.7rem;
@@ -704,6 +716,64 @@
   color: var(--muted);
   font-size: 0.84rem;
   text-align: center;
+}
+
+/* Stacked table rows on small screens ------------------------------ */
+
+@media (max-width: 700px) {
+  .data-table--stack,
+  .data-table--stack tbody,
+  .data-table--stack tr,
+  .data-table--stack td {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table--stack thead {
+    display: none;
+  }
+
+  .data-table--stack tr {
+    padding: 0.95rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .data-table--stack tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .data-table--stack td {
+    padding: 0.16rem 0;
+    border-bottom: 0;
+  }
+
+  .data-table--stack td[data-label] {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .data-table--stack td[data-label]::before {
+    content: attr(data-label);
+    flex: none;
+    color: var(--faint);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .data-table--stack .row-sub {
+    margin-bottom: 0.45rem;
+  }
+
+  .data-table--stack .row-action {
+    margin-top: 0.55rem;
+    padding-top: 0.55rem;
+    border-top: 1px dashed var(--line);
+    text-align: left;
+  }
 }
 
 /* Alerts ----------------------------------------------------------- */

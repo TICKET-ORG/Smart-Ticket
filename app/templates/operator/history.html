@@ -1,0 +1,103 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import status_badge with context %}
+
+{% block title %}History — SmartTicket{% endblock %}
+{% block description %}Every scan recorded at your gates, filterable by venue.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/operator.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Scan history</p>
+      <h1>What happened at the gate.</h1>
+      <p>
+        {% if event %}
+          Scans recorded for {{ event.title }}.
+        {% else %}
+          Scans recorded across every venue you staff.
+        {% endif %}
+      </p>
+    </div>
+    <div class="app-head__actions">
+      <a class="btn btn--accent" href="/operator/scanner{% if event %}?event={{ event.id }}{% endif %}">
+        Open scanner
+        {{ icon("arrow-right") }}
+      </a>
+    </div>
+  </header>
+
+  <section class="metric-row metric-row--three" aria-label="Filtered totals">
+    <div class="metric">
+      <span class="metric__value">{{ summary.total }}</span>
+      <span class="metric__label">Scans</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ summary.granted }}</span>
+      <span class="metric__label">Granted</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ summary.denied }}</span>
+      <span class="metric__label">Denied</span>
+    </div>
+  </section>
+
+  <div class="chip-row" role="group" aria-label="Filter by venue">
+    <a
+      class="chip"
+      href="/operator/history"
+      {% if not event %}aria-current="true"{% endif %}
+    >All venues</a>
+    {% for item in events %}
+      <a
+        class="chip"
+        href="/operator/history?event={{ item.id }}"
+        {% if event and event.id == item.id %}aria-current="true"{% endif %}
+      >{{ item.title }}</a>
+    {% endfor %}
+  </div>
+
+  {% if logs %}
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Participant</th>
+            <th scope="col">Event</th>
+            <th scope="col">Result</th>
+            <th scope="col">Detail</th>
+            <th scope="col">Operator</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td class="numeric" data-label="Time">{{ log.time_label }}</td>
+              <td data-label="Participant">{{ log.participant }}</td>
+              <td data-label="Event">{{ log.event.title if log.event else "—" }}</td>
+              <td data-label="Result">{{ status_badge(log.result) }}</td>
+              <td data-label="Detail" class="log-detail">{{ log.reason }}</td>
+              <td data-label="Operator">{{ log.operator }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="demo-note">Sample history · not produced by a live scan</p>
+  {% else %}
+    <div class="empty-state">
+      {{ icon("clock") }}
+      <h2>Nothing recorded yet.</h2>
+      <p>Scans for this venue will be listed here as they happen.</p>
+      <div class="cluster" style="justify-content: center; margin-top: 1.25rem;">
+        <a class="btn btn--outline" href="/operator/history">Show all venues</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

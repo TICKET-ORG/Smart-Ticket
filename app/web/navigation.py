@@ -29,8 +29,30 @@ PARTICIPANT_NAV = (
     },
 )
 
+OPERATOR_NAV = (
+    {
+        "label": "Overview",
+        "href": "/operator/dashboard",
+        "page": "dashboard",
+        "icon": "activity",
+    },
+    {
+        "label": "Scanner",
+        "href": "/operator/scanner",
+        "page": "scanner",
+        "icon": "scan-face",
+    },
+    {
+        "label": "History",
+        "href": "/operator/history",
+        "page": "history",
+        "icon": "clock",
+    },
+)
+
 ROLE_NAV = {
     "participant": PARTICIPANT_NAV,
+    "operator": OPERATOR_NAV,
 }
 
 ROLE_LABELS = {
@@ -53,8 +75,8 @@ DEMO_ROLES = (
         "id": "operator",
         "label": ROLE_LABELS["operator"],
         "description": "Check passes at the gate",
-        "href": None,
-        "available": False,
+        "href": "/operator/dashboard",
+        "available": True,
     },
     {
         "id": "admin",

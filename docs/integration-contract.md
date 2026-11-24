@@ -24,9 +24,11 @@ not an authorization boundary.
 
 When auth lands:
 
-- Replace `_guard_demo()` in `app/web/routes/participant.py` with a session
-  dependency that resolves the signed-in user.
+- Replace `require_demo()` in `app/web/demo.py` with a session dependency that
+  resolves the signed-in user; participant and operator routes keep calling it.
 - Drop `user_for_role()` from page controllers; pass the session user instead.
+- Replace `repository.operator_events()` with the operator's real assignment
+  query. The demo constant `OPERATOR_EVENT_IDS` exists only to mimic that.
 - Set `DEMO_ROLES[*].available` from the session role and point `href` at the
   real landing route for that role.
 - Keep the demo strip only while `DEMO_MODE=true`; it is rendered from
@@ -45,8 +47,9 @@ When auth lands:
 | `participant/enrollment.html` | `user`, `face_profile`, `sample_count`, `poses`, `target_samples` | Poses are labels and instructions, not coordinates |
 | `participant/tickets.html` | `user`, `tickets` | Active passes first, then the most recent events |
 | `participant/ticket_detail.html` | `user`, `ticket` | QR is fetched from `participant_ticket_qr`, never embedded as a data URI |
-| `operator/dashboard.html` | `events`, `recent_logs` | Only assigned events |
-| `operator/scanner.html` | `event`, `session` | Session is short-lived and ticket-scoped |
+| `operator/dashboard.html` | `user`, `events`, `summary`, `recent_logs` | Only assigned events; `summary` counts the demo scan log |
+| `operator/scanner.html` | `user`, `events`, `event`, `token`, `pass_view`, `lookup_failed` | `pass_view` is a read-only lookup, never a check-in |
+| `operator/history.html` | `user`, `events`, `event`, `logs`, `summary` | Filtering happens server-side through `?event=` |
 | `admin/dashboard.html` | `metrics`, `logs`, `model_info`, `gallery_count` | No invented analytics |
 | `admin/events.html` | `events` | |
 | `cv_lab/index.html` | `pipeline_report` | Only after the backend returns real values |
@@ -103,6 +106,17 @@ Backend `Registration`: `id`, `user_id`, `event_id`, `status`, `created_at`,
 `ticket_id`, `operator_id`, `result` (`GRANTED`, `DENIED`), `failure_reason`,
 `model_version_id`, `created_at`. The admin table joins ticket → event and user.
 
+The demo log stores `participant`, `event_title`, `event_id`, `reason`, and
+`operator` as display strings so the operator pages can render without a
+session. `DemoCheckinLogView` is the joined shape pages use, and
+`DemoCheckinSummary` carries `granted` / `denied` / `total` / `grant_rate`.
+
+**These are hand-written sample records.** The reasons deliberately read
+"Sample record · …" instead of a distance or threshold, because the frontend
+must never imply that a verification ran. When the real log lands, replace the
+strings with `failure_reason` and the model version id; do not add a fake
+distance to the demo fixture.
+
 ## Interactive endpoints
 
 | Module | Endpoint | Payload | Response |
@@ -129,6 +143,7 @@ or a cookie set by the backend, not from a hard-coded value.
 | `js/core/nav.js` | DOM only | No backend |
 | `js/core/app-shell.js` | DOM only | Mobile sidebar and role switcher |
 | `js/pages/enrollment.js` | `navigator.mediaDevices` | Local capture only; no fetch, no descriptor. Replace the save handler when `/api/enrollment/*` exists |
+| `js/pages/scanner.js` | `navigator.mediaDevices` | Camera preview only. Capture shows the "not connected" notice; wire it to `/api/checkin/verify-face` later |
 | `js/core/api.js` (next) | `fetch`, session cookie | Central JSON/error handling |
 | `js/modules/camera.js` (next) | `navigator.mediaDevices` | Releases tracks on unmount |
 | `js/modules/scanner.js` (next) | `/api/checkin/*` | Two-stage wizard, countdown |
@@ -136,10 +151,11 @@ or a cookie set by the backend, not from a hard-coded value.
 
 ## Demo router
 
-The participant workspace ships without a mock API: enrollment keeps frames in
-the browser and its save button stops at a notice. During the scanner PR,
-`app/mock/api.py` will expose the interactive endpoints with deterministic demo
-responses. It must:
+The participant and operator workspaces ship without a mock API. Enrollment
+keeps frames in the browser, the scanner only previews the camera, and both stop
+at an explicit "not connected" notice. `app/mock/api.py` will expose the
+interactive endpoints with deterministic demo responses during the integration
+PR. It must:
 
 - Return a visible `demo: true` flag.
 - Never be registered when `DEMO_MODE=false`.

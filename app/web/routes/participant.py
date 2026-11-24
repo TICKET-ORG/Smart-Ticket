@@ -12,9 +12,9 @@ import io
 import qrcode
 from fastapi import APIRouter, HTTPException, Request, Response
 
-from app.config import settings
 from app.mock.fixtures import DemoUser
 from app.mock.repository import DemoRepository
+from app.web.demo import require_demo
 from app.web.deps import RepositoryDep
 from app.web.enrollment import ENROLLMENT_POSES, TARGET_SAMPLES
 from app.web.templating import render
@@ -23,8 +23,7 @@ router = APIRouter(prefix="/participant", tags=["participant"])
 
 
 def _guard_demo() -> None:
-    if not settings.demo_mode:
-        raise HTTPException(status_code=404, detail="Not found")
+    require_demo()
 
 
 def _participant(repository: DemoRepository) -> DemoUser:

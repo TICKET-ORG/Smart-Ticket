@@ -8,11 +8,11 @@ The recognition pipeline (HOG descriptor, K-NN matching, PSO-tuned threshold)
 runs on the Python backend. This repository is being built frontend-first and
 will be wired to the backend data layer as it lands.
 
-> **Status — PR 3 / participant workspace.** The application shell, design
-> system, landing page, event catalog, event detail, account screens, component
-> style guide, demo data repository, and the participant workspace (overview,
-> face enrollment, passes) are in place. Operator, admin, and CV lab screens are
-> next.
+> **Status — PR 4 / operator workspace.** The application shell, design system,
+> landing page, event catalog, event detail, account screens, component style
+> guide, demo data repository, participant workspace (overview, face
+> enrollment, passes), and operator workspace (overview, gate scanner, scan
+> history) are in place. Admin and CV lab screens are next.
 
 ## Frontend scope
 
@@ -29,9 +29,12 @@ interactive flows stop at the presentation layer:
 - Face enrollment asks the browser for camera access and draws nine frames to a
   local canvas so the participant can see progress. Nothing is uploaded: the
   save button reports that the endpoint is not connected.
-- Face recognition is not simulated anywhere. The operator screens will show a
-  real idle/scanning state and only display a verdict once the backend
-  endpoint returns one.
+- Face recognition is not simulated anywhere. The operator scanner previews the
+  camera and looks up a demo token, but it never produces a verdict: the face
+  stage ends in an explicit "verification not connected" state and the pass is
+  left untouched.
+- Scan history is hand-written sample data, labelled as such on the page. It is
+  not output from a model run.
 
 Connecting the forms and scanner to the backend happens in a later pass, once
 the API contract in `docs/integration-contract.md` is implemented.
@@ -70,6 +73,9 @@ Useful routes:
 | `/participant/tickets` | Every pass on the demo account |
 | `/participant/tickets/{id}` | Pass sheet with QR and entry notes |
 | `/participant/tickets/{id}/qr.png` | Server-rendered QR image for the pass |
+| `/operator/dashboard` | Assigned venues, gate totals, latest scans |
+| `/operator/scanner` | Two-stage gate check; camera preview only |
+| `/operator/history` | Every recorded scan, filterable by venue |
 | `/dev/styleguide` | Design tokens and component catalogue |
 | `/healthz` | Application health check |
 | `/api/docs` | OpenAPI docs (development only) |
@@ -80,9 +86,9 @@ Useful routes:
 `app/mock/repository.py`. Fixtures are shaped like the backend ORM models so
 templates do not need to change when the real repository replaces the demo one.
 
-The participant routes are gated on this flag and return 404 when it is off.
-There is no session guard yet, so exposing them in a non-demo deployment would
-show one account's data to every visitor.
+The participant and operator routes are gated on this flag and return 404 when
+it is off. There is no session guard yet, so exposing them in a non-demo
+deployment would show one account's data to every visitor.
 
 To move to live data, implement the same repository methods against the backend
 and switch the dependency in `app/web/deps.py`. Do not scatter fixture imports
@@ -101,6 +107,7 @@ app/
 │   └── repository.py
 ├── web/
 │   ├── deps.py              # Repository dependency (integration seam)
+│   ├── demo.py              # Demo-only route guard (session TODO lives here)
 │   ├── navigation.py        # Role labels, sidebar nav, demo role switcher
 │   ├── enrollment.py        # Guided pose copy for the capture UI
 │   ├── templating.py        # Jinja environment and render helper
@@ -111,6 +118,7 @@ app/
 │   ├── components/          # Navbar, footer, cards, app shell, icon macro
 │   ├── public/              # Landing, catalog, event detail, account screens
 │   ├── participant/         # Overview, enrollment, passes
+│   ├── operator/            # Overview, gate scanner, scan history
 │   ├── dev/                 # Style guide (development only)
 │   └── errors/
 └── static/
@@ -146,7 +154,7 @@ Current branch plan:
 1. `rachmad` — foundation, design system, landing, style guide
 2. Event catalog, event detail, and account screens
 3. Participant dashboard, enrollment, tickets
-4. Operator scanner flow
+4. Operator dashboard, gate scanner, scan history
 5. Admin panels and CV lab shell
 6. Polish, accessibility audit, integration
 

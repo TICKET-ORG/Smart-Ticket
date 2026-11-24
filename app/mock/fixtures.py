@@ -199,6 +199,44 @@ class DemoCheckinLog:
     reason: str
     created_at: datetime
     operator: str
+    event_id: str = ""
+
+
+@dataclass(frozen=True)
+class DemoCheckinLogView:
+    """A log joined with the event it belongs to."""
+
+    id: str
+    participant: str
+    result: str
+    reason: str
+    created_at: datetime
+    operator: str
+    event: DemoEvent | None
+
+    @property
+    def is_granted(self) -> bool:
+        return self.result == "GRANTED"
+
+    @property
+    def time_label(self) -> str:
+        return self.created_at.strftime("%H:%M:%S")
+
+
+@dataclass(frozen=True)
+class DemoCheckinSummary:
+    """Counts for one event's demo scan history."""
+
+    granted: int
+    denied: int
+
+    @property
+    def total(self) -> int:
+        return self.granted + self.denied
+
+    @property
+    def grant_rate(self) -> int:
+        return round(self.granted / self.total * 100) if self.total else 0
 
 
 def demo_events() -> list[DemoEvent]:
@@ -440,6 +478,13 @@ def demo_registrations() -> list[DemoRegistration]:
 
 
 def demo_checkin_logs() -> list[DemoCheckinLog]:
+    """Sample gate history.
+
+    These are hand-written records, not model output: no distances, thresholds,
+    or confidence values are stored here, because the frontend must never imply
+    that a verification ran.
+    """
+
     now = datetime.now()
     return [
         DemoCheckinLog(
@@ -447,44 +492,49 @@ def demo_checkin_logs() -> list[DemoCheckinLog]:
             "Alya Prameswari",
             "Senja Kala — Album Release Night",
             "GRANTED",
-            "Face matched · distance 0.412",
+            "Sample record · identity matched",
             now - timedelta(minutes=2),
             "Bagas Wirawan",
+            event_id="evt-senja-kala",
         ),
         DemoCheckinLog(
             "log-02",
             "Dimas Ardhana",
             "Senja Kala — Album Release Night",
             "DENIED",
-            "Face distance above threshold",
+            "Sample record · identity did not match",
             now - timedelta(minutes=5),
             "Bagas Wirawan",
+            event_id="evt-senja-kala",
         ),
         DemoCheckinLog(
             "log-03",
             "Nadia Salsabila",
             "Senja Kala — Album Release Night",
             "GRANTED",
-            "Face matched · distance 0.388",
+            "Sample record · identity matched",
             now - timedelta(minutes=7),
             "Bagas Wirawan",
+            event_id="evt-senja-kala",
         ),
         DemoCheckinLog(
             "log-04",
             "Raka Pratama",
-            "Senja Kala — Album Release Night",
+            "Ruang Reka: Design & Technology Forum",
             "DENIED",
-            "Ticket already used",
+            "Sample record · pass already used",
             now - timedelta(minutes=9),
             "Bagas Wirawan",
+            event_id="evt-ruang-reka",
         ),
         DemoCheckinLog(
             "log-05",
             "Intan Maharani",
-            "Senja Kala — Album Release Night",
+            "Ruang Reka: Design & Technology Forum",
             "GRANTED",
-            "Face matched · distance 0.451",
+            "Sample record · identity matched",
             now - timedelta(minutes=12),
             "Bagas Wirawan",
+            event_id="evt-ruang-reka",
         ),
     ]
