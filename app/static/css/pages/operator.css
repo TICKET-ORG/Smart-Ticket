@@ -86,10 +86,6 @@
   font-size: 0.76rem;
 }
 
-.metric-row--three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 /* Scanner ---------------------------------------------------------- */
 
 .scan-layout {
@@ -316,10 +312,6 @@
     justify-items: start;
     gap: 0.4rem;
     text-align: left;
-  }
-
-  .metric-row--three {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

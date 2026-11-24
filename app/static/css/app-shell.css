@@ -454,6 +454,10 @@ a.role-switch__item:hover {
   background: var(--paper-raised);
 }
 
+.metric-row--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .metric {
   display: grid;
   gap: 0.3rem;
@@ -512,6 +516,12 @@ a.role-switch__item:hover {
   font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.side-card__title {
+  font-family: var(--font-serif);
+  font-size: var(--step-2);
+  font-weight: 400;
 }
 
 .side-card__lede {
@@ -617,6 +627,16 @@ a.role-switch__item:hover {
 
   .metric:nth-child(4) {
     border-top: 1px solid var(--line);
+  }
+
+  /* Three short counts still fit on one line; wrapping them looks accidental. */
+  .metric-row--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .metric-row--three .metric:nth-child(3) {
+    border-top: 0;
+    border-left: 1px solid var(--line);
   }
 }
 

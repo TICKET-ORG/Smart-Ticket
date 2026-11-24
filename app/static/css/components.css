@@ -776,6 +776,31 @@
   }
 }
 
+/* Table rows ------------------------------------------------------- */
+
+.row-title {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.row-title:hover {
+  color: var(--accent);
+}
+
+.row-sub {
+  display: block;
+  margin-top: 0.1rem;
+  color: var(--faint);
+  font-size: 0.72rem;
+}
+
+.row-action {
+  text-align: right;
+  white-space: nowrap;
+}
+
 /* Alerts ----------------------------------------------------------- */
 
 .alert {
