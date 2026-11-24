@@ -9,6 +9,8 @@ from __future__ import annotations
 from datetime import datetime
 
 from app.mock.fixtures import (
+    DemoAdminRegistrationView,
+    DemoAdminSummary,
     DemoCheckinLog,
     DemoCheckinLogView,
     DemoCheckinSummary,
@@ -241,3 +243,76 @@ class DemoRepository:
             None,
         )
         return self._join_ticket(ticket) if ticket else None
+
+    # Admin --------------------------------------------------------
+
+    def upcoming_events(self, limit: int = 3) -> list[DemoEvent]:
+        """The next events by start time, soonest first."""
+
+        now = datetime.now()
+        events = [event for event in self._events if event.start_at >= now]
+        return events[:limit]
+
+    def events_with_registrations(self) -> list[DemoEvent]:
+        """Events that have at least one sample registration."""
+
+        ids = {registration.event_id for registration in self._registrations}
+        return [event for event in self._events if event.id in ids]
+
+    def all_registration_views(
+        self,
+        *,
+        event_id: str | None = None,
+        status: str | None = None,
+    ) -> list[DemoAdminRegistrationView]:
+        """Every sample registration, newest first, joined to holder and pass."""
+
+        wanted = status.strip().upper() if status else ""
+        views: list[DemoAdminRegistrationView] = []
+
+        for registration in self._registrations:
+            if event_id and registration.event_id != event_id:
+                continue
+            if wanted and registration.status.upper() != wanted:
+                continue
+
+            event = self.get_event(registration.event_id)
+            user = self.get_user(registration.user_id)
+            if event is None or user is None:
+                continue
+
+            ticket = self.ticket_view(registration.ticket_id) if registration.ticket_id else None
+            views.append(
+                DemoAdminRegistrationView(
+                    id=registration.id,
+                    status=registration.status,
+                    created_at=registration.created_at,
+                    user=user,
+                    event=event,
+                    ticket=ticket,
+                )
+            )
+
+        views.sort(key=lambda view: view.created_at, reverse=True)
+        return views
+
+    def admin_summary(self) -> DemoAdminSummary:
+        """Record-level counts for the admin overview."""
+
+        confirmed = sum(1 for item in self._registrations if item.status == "CONFIRMED")
+        cancelled = sum(1 for item in self._registrations if item.status == "CANCELLED")
+
+        return DemoAdminSummary(
+            events=len(self._events),
+            registrations=len(self._registrations),
+            confirmed=confirmed,
+            cancelled=cancelled,
+            passes=len(self._tickets),
+            granted_entries=sum(1 for log in self._checkin_logs if log.result == "GRANTED"),
+        )
+
+    def enrolled_profile_count(self) -> int:
+        return sum(1 for profile in self._face_profiles.values() if profile.is_complete)
+
+    def participant_count(self) -> int:
+        return sum(1 for user in self._users.values() if user.role == "participant")

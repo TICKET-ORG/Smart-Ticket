@@ -191,6 +191,46 @@ class DemoRegistrationView:
 
 
 @dataclass(frozen=True)
+class DemoAdminRegistrationView:
+    """A registration joined with its holder, event, and pass."""
+
+    id: str
+    status: str
+    created_at: datetime
+    user: DemoUser
+    event: DemoEvent
+    ticket: DemoTicketView | None
+
+    @property
+    def ticket_status(self) -> str:
+        return self.ticket.status if self.ticket else "PENDING"
+
+    @property
+    def registered_label(self) -> str:
+        return self.created_at.strftime("%d %b %Y")
+
+
+@dataclass(frozen=True)
+class DemoAdminSummary:
+    """Record-level counts for the admin overview.
+
+    These come from the fixture records, not from the aggregate seat counts on
+    the event cards, so the admin pages stay internally consistent.
+    """
+
+    events: int
+    registrations: int
+    confirmed: int
+    cancelled: int
+    passes: int
+    granted_entries: int
+
+    @property
+    def cancelled_rate(self) -> int:
+        return round(self.cancelled / self.registrations * 100) if self.registrations else 0
+
+
+@dataclass(frozen=True)
 class DemoCheckinLog:
     id: str
     participant: str
@@ -396,6 +436,48 @@ def demo_users() -> list[DemoUser]:
             email="admin@smartticket.test",
             role="admin",
         ),
+        DemoUser(
+            id="usr-dimas",
+            name="Dimas Ardhana",
+            email="dimas@example.com",
+            role="participant",
+        ),
+        DemoUser(
+            id="usr-nadia",
+            name="Nadia Salsabila",
+            email="nadia@example.com",
+            role="participant",
+        ),
+        DemoUser(
+            id="usr-raka",
+            name="Raka Pratama",
+            email="raka@example.com",
+            role="participant",
+        ),
+        DemoUser(
+            id="usr-intan",
+            name="Intan Maharani",
+            email="intan@example.com",
+            role="participant",
+        ),
+        DemoUser(
+            id="usr-yusuf",
+            name="Yusuf Halim",
+            email="yusuf@example.com",
+            role="participant",
+        ),
+        DemoUser(
+            id="usr-clara",
+            name="Clara Wijaya",
+            email="clara@example.com",
+            role="participant",
+        ),
+        DemoUser(
+            id="usr-bimo",
+            name="Bimo Saputra",
+            email="bimo@example.com",
+            role="participant",
+        ),
     ]
 
 
@@ -432,6 +514,46 @@ def demo_tickets() -> list[DemoTicket]:
             used_at=now - timedelta(days=17, hours=3),
             seat="GA · Gate 4",
         ),
+        DemoTicket(
+            id="tkt-dimas-senja",
+            code="ST-2026-8K2D-44QP",
+            event_id="evt-senja-kala",
+            user_id="usr-dimas",
+            status="ACTIVE",
+            issued_at=now - timedelta(days=3),
+            used_at=None,
+            seat="GA · Section B",
+        ),
+        DemoTicket(
+            id="tkt-nadia-senja",
+            code="ST-2026-5R7N-21BW",
+            event_id="evt-senja-kala",
+            user_id="usr-nadia",
+            status="ACTIVE",
+            issued_at=now - timedelta(days=3, hours=4),
+            used_at=None,
+            seat="GA · Section B",
+        ),
+        DemoTicket(
+            id="tkt-yusuf-ruang",
+            code="ST-2026-3H6Y-77LC",
+            event_id="evt-ruang-reka",
+            user_id="usr-yusuf",
+            status="ACTIVE",
+            issued_at=now - timedelta(days=1),
+            used_at=None,
+            seat="Row A · 4",
+        ),
+        DemoTicket(
+            id="tkt-clara-nada",
+            code="ST-2026-2C4V-90MD",
+            event_id="evt-nada-timur",
+            user_id="usr-clara",
+            status="ACTIVE",
+            issued_at=now - timedelta(days=8),
+            used_at=None,
+            seat="GA · Gate 2",
+        ),
     ]
 
 
@@ -444,10 +566,30 @@ def demo_face_profiles() -> list[DemoFaceProfile]:
             sample_count=9,
             updated_at=datetime.now() - timedelta(days=12),
         ),
+        DemoFaceProfile(
+            id="fcp-dimas",
+            user_id="usr-dimas",
+            enrollment_status="COMPLETED",
+            sample_count=9,
+            updated_at=datetime.now() - timedelta(days=9),
+        ),
+        DemoFaceProfile(
+            id="fcp-nadia",
+            user_id="usr-nadia",
+            enrollment_status="COMPLETED",
+            sample_count=9,
+            updated_at=datetime.now() - timedelta(days=7),
+        ),
     ]
 
 
 def demo_registrations() -> list[DemoRegistration]:
+    """Sample registrations across the programme.
+
+    The demo participant keeps the three registrations the pass screens rely
+    on; the rest give the admin roster enough rows to read like a real list.
+    """
+
     now = datetime.now()
     return [
         DemoRegistration(
@@ -473,6 +615,110 @@ def demo_registrations() -> list[DemoRegistration]:
             status="CONFIRMED",
             created_at=now - timedelta(days=20),
             ticket_id="tkt-nada-timur",
+        ),
+        DemoRegistration(
+            id="reg-dimas-senja",
+            user_id="usr-dimas",
+            event_id="evt-senja-kala",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=3),
+            ticket_id="tkt-dimas-senja",
+        ),
+        DemoRegistration(
+            id="reg-nadia-senja",
+            user_id="usr-nadia",
+            event_id="evt-senja-kala",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=3, hours=4),
+            ticket_id="tkt-nadia-senja",
+        ),
+        DemoRegistration(
+            id="reg-raka-senja",
+            user_id="usr-raka",
+            event_id="evt-senja-kala",
+            status="CANCELLED",
+            created_at=now - timedelta(days=2),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-intan-senja",
+            user_id="usr-intan",
+            event_id="evt-senja-kala",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=2, hours=6),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-yusuf-ruang",
+            user_id="usr-yusuf",
+            event_id="evt-ruang-reka",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=1),
+            ticket_id="tkt-yusuf-ruang",
+        ),
+        DemoRegistration(
+            id="reg-clara-ruang",
+            user_id="usr-clara",
+            event_id="evt-ruang-reka",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=1, hours=2),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-bimo-ruang",
+            user_id="usr-bimo",
+            event_id="evt-ruang-reka",
+            status="CONFIRMED",
+            created_at=now - timedelta(hours=12),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-dimas-puisi",
+            user_id="usr-dimas",
+            event_id="evt-malam-puisi",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=5),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-nadia-puisi",
+            user_id="usr-nadia",
+            event_id="evt-malam-puisi",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=5, hours=3),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-intan-puisi",
+            user_id="usr-intan",
+            event_id="evt-malam-puisi",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=4),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-yusuf-filharmoni",
+            user_id="usr-yusuf",
+            event_id="evt-filharmoni",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=2),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-bimo-filharmoni",
+            user_id="usr-bimo",
+            event_id="evt-filharmoni",
+            status="CANCELLED",
+            created_at=now - timedelta(days=6),
+            ticket_id=None,
+        ),
+        DemoRegistration(
+            id="reg-clara-nada",
+            user_id="usr-clara",
+            event_id="evt-nada-timur",
+            status="CONFIRMED",
+            created_at=now - timedelta(days=8),
+            ticket_id="tkt-clara-nada",
         ),
     ]
 
