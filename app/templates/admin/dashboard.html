@@ -1,0 +1,189 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import status_badge with context %}
+
+{% block title %}Overview — SmartTicket{% endblock %}
+{% block description %}Programme capacity, registrations, and gate activity.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>The whole programme, in one place.</h1>
+      <p>
+        Capacity, registrations, and the gate. Every number below is read from
+        the demo records, not from a live database.
+      </p>
+    </div>
+    <div class="app-head__actions">
+      <a class="btn btn--outline" href="/admin/registrations">
+        Registrations
+        {{ icon("arrow-right") }}
+      </a>
+      <a class="btn btn--accent" href="/admin/events#new-event">
+        New event
+        {{ icon("plus") }}
+      </a>
+    </div>
+  </header>
+
+  <section class="metric-row" aria-label="Programme totals">
+    <div class="metric">
+      <span class="metric__value">{{ summary.events }}</span>
+      <span class="metric__label">Events</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ summary.registrations }}</span>
+      <span class="metric__label">Registrations</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ summary.passes }}</span>
+      <span class="metric__label">Passes issued</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ summary.granted_entries }}</span>
+      <span class="metric__label">Entries granted</span>
+    </div>
+  </section>
+
+  <div class="admin-split">
+    <section class="app-section" aria-labelledby="upcoming-heading">
+      <div class="app-section__head">
+        <h2 id="upcoming-heading">Next up</h2>
+        <a class="text-link" href="/admin/events">
+          All events
+          {{ icon("arrow-right") }}
+        </a>
+      </div>
+
+      {% if upcoming %}
+        <ul class="programme-list">
+          {% for item in upcoming %}
+            <li class="programme-row">
+              <span class="programme-row__date" aria-hidden="true">
+                <span class="programme-row__day">{{ item.start_at|date("%d") }}</span>
+                <span class="programme-row__month">{{ item.start_at|date("%b") }}</span>
+              </span>
+
+              <div class="programme-row__body">
+                <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+                <p class="programme-row__meta">
+                  {{ item.date_long }} · {{ item.time_short }}<br>
+                  {{ item.location }}, {{ item.city }}
+                </p>
+              </div>
+
+              <div class="programme-row__fill">
+                <div class="capacity">
+                  <div class="capacity__meta">
+                    <span>
+                      <strong>{{ "{:,}".format(item.registered_count) }}</strong>
+                      / {{ "{:,}".format(item.capacity) }} seats
+                    </span>
+                    <span>{{ item.capacity_pct }}%</span>
+                  </div>
+                  <div class="capacity__bar">
+                    <span class="capacity__fill" style="--value: {{ item.capacity_pct }}%"></span>
+                  </div>
+                </div>
+                {{ status_badge(item.status) }}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          {{ icon("calendar") }}
+          <h2>Nothing scheduled.</h2>
+          <p>New events appear here as soon as they have a start date.</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <aside class="side-card" aria-labelledby="health-heading">
+      <div class="side-card__head">
+        <span class="side-card__label">At a glance</span>
+        <span class="badge">Demo</span>
+      </div>
+
+      <h2 class="side-card__title" id="health-heading">Records on file</h2>
+
+      <p class="side-card__lede">
+        Sample rows written by hand so the panels have something honest to
+        show. No form submission created any of them.
+      </p>
+
+      <dl class="fact-list">
+        <div>
+          <dt>Confirmed</dt>
+          <dd>{{ summary.confirmed }} registrations</dd>
+        </div>
+        <div>
+          <dt>Cancelled</dt>
+          <dd>{{ summary.cancelled }} · {{ summary.cancelled_rate }}%</dd>
+        </div>
+        <div>
+          <dt>Enrolled faces</dt>
+          <dd>{{ enrolled_profiles }} of {{ participant_count }} participants</dd>
+        </div>
+        <div>
+          <dt>Passes issued</dt>
+          <dd>{{ summary.passes }}</dd>
+        </div>
+      </dl>
+
+      <a class="btn btn--outline btn--block" href="/admin/registrations">
+        Review registrations
+      </a>
+
+      <p class="demo-note">Demo records · not a live database</p>
+    </aside>
+  </div>
+
+  <section class="app-section" aria-labelledby="activity-heading">
+    <div class="app-section__head">
+      <h2 id="activity-heading">Latest gate activity</h2>
+      <p>Across every venue</p>
+    </div>
+
+    {% if recent_logs %}
+      <div class="table-wrap">
+        <table class="data-table data-table--stack">
+          <thead>
+            <tr>
+              <th scope="col">Time</th>
+              <th scope="col">Participant</th>
+              <th scope="col">Event</th>
+              <th scope="col">Result</th>
+              <th scope="col">Operator</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in recent_logs %}
+              <tr>
+                <td class="numeric" data-label="Time">{{ log.time_label }}</td>
+                <td data-label="Participant">{{ log.participant }}</td>
+                <td data-label="Event">{{ log.event.title if log.event else "—" }}</td>
+                <td data-label="Result">{{ status_badge(log.result) }}</td>
+                <td data-label="Operator">{{ log.operator }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="demo-note">Sample history · not produced by a live scan</p>
+    {% else %}
+      <div class="empty-state">
+        {{ icon("activity") }}
+        <h2>No scans recorded.</h2>
+        <p>Gate activity appears here once an operator scans a pass.</p>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

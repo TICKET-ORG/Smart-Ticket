@@ -1,0 +1,140 @@
+{% extends "base_app.html" %}
+{% from "components/icons.html" import icon with context %}
+{% from "components/cards.html" import status_badge with context %}
+
+{% block title %}Registrations — SmartTicket{% endblock %}
+{% block description %}Every registration on file, filterable by venue and status.{% endblock %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='/css/pages/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-page">
+  <header class="app-head">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Who is coming.</h1>
+      <p>
+        {% if event and status %}
+          {{ status|capitalize }} registrations for {{ event.title }}.
+        {% elif event %}
+          Every registration for {{ event.title }}.
+        {% elif status %}
+          {{ status|capitalize }} registrations across the programme.
+        {% else %}
+          Every registration on file, across the programme.
+        {% endif %}
+      </p>
+    </div>
+    <div class="app-head__actions">
+      <a class="btn btn--outline" href="/admin/events">
+        {{ icon("arrow-left") }}
+        Events
+      </a>
+    </div>
+  </header>
+
+  <section class="metric-row metric-row--three" aria-label="Filtered totals">
+    <div class="metric">
+      <span class="metric__value">{{ rows|length }}</span>
+      <span class="metric__label">Showing</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ confirmed_count }}</span>
+      <span class="metric__label">Confirmed</span>
+    </div>
+    <div class="metric">
+      <span class="metric__value">{{ cancelled_count }}</span>
+      <span class="metric__label">Cancelled</span>
+    </div>
+  </section>
+
+  <div class="filter-stack">
+    <div class="filter-row">
+      <span class="filter-row__label">Venue</span>
+      <div class="chip-row" role="group" aria-label="Filter by venue">
+        <a
+          class="chip"
+          href="/admin/registrations?event=&status={{ status }}"
+          {% if not event %}aria-current="true"{% endif %}
+        >All venues</a>
+        {% for item in events %}
+          <a
+            class="chip"
+            href="/admin/registrations?event={{ item.id }}&status={{ status }}"
+            {% if event and event.id == item.id %}aria-current="true"{% endif %}
+          >{{ item.title }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-row__label">Status</span>
+      <div class="chip-row" role="group" aria-label="Filter by status">
+        <a
+          class="chip"
+          href="/admin/registrations?event={{ event.id if event else '' }}&status="
+          {% if not status %}aria-current="true"{% endif %}
+        >Any status</a>
+        {% for value in ("CONFIRMED", "CANCELLED") %}
+          <a
+            class="chip"
+            href="/admin/registrations?event={{ event.id if event else '' }}&status={{ value }}"
+            {% if status == value %}aria-current="true"{% endif %}
+          >{{ value|capitalize }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% if rows %}
+    <div class="table-wrap">
+      <table class="data-table data-table--stack">
+        <thead>
+          <tr>
+            <th scope="col">Participant</th>
+            <th scope="col">Event</th>
+            <th scope="col">Registered</th>
+            <th scope="col">Pass</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>
+                <span class="row-title">{{ row.user.name }}</span>
+                <span class="row-sub">{{ row.user.email }}</span>
+              </td>
+              <td data-label="Event">
+                <a class="row-title" href="{{ row.event.url }}">{{ row.event.title }}</a>
+                <span class="row-sub">{{ row.event.date_short }}</span>
+              </td>
+              <td class="numeric" data-label="Registered">{{ row.registered_label }}</td>
+              <td data-label="Pass">
+                {% if row.ticket %}
+                  {{ status_badge(row.ticket.status) }}
+                {% else %}
+                  <span class="row-sub">No pass</span>
+                {% endif %}
+              </td>
+              <td data-label="Status">{{ status_badge(row.status) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="demo-note">Sample records · no registration was created here</p>
+  {% else %}
+    <div class="empty-state">
+      {{ icon("users") }}
+      <h2>No registrations match.</h2>
+      <p>Clear the filters to see every registration on file.</p>
+      <div class="cluster" style="justify-content: center; margin-top: 1.25rem;">
+        <a class="btn btn--outline" href="/admin/registrations">Clear filters</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

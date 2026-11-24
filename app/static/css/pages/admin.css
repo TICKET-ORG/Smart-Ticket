@@ -1,0 +1,204 @@
+/* ------------------------------------------------------------------
+   Admin workspace: programme list, event form, registration filters
+   ------------------------------------------------------------------ */
+
+.admin-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+}
+
+/* Programme list --------------------------------------------------- */
+
+.programme-list {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+  list-style: none;
+  overflow: hidden;
+}
+
+.programme-row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 170px;
+  gap: clamp(0.85rem, 2vw, 1.35rem);
+  align-items: center;
+  padding: 1rem 1.15rem;
+}
+
+.programme-row + .programme-row {
+  border-top: 1px solid var(--line);
+}
+
+.programme-row__date {
+  display: grid;
+  justify-items: center;
+  gap: 0.05rem;
+  padding-right: clamp(0.85rem, 2vw, 1.35rem);
+  border-right: 1px solid var(--line);
+}
+
+.programme-row__day {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.95;
+}
+
+.programme-row__month {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.programme-row__body {
+  min-width: 0;
+}
+
+.programme-row__body h3 {
+  font-family: var(--font-serif);
+  font-size: var(--step-1);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.programme-row__body h3 a {
+  text-decoration: none;
+}
+
+.programme-row__body h3 a:hover {
+  color: var(--accent);
+}
+
+.programme-row__meta {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.programme-row__fill {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: end;
+}
+
+.programme-row__fill .capacity {
+  width: 100%;
+}
+
+/* Event form ------------------------------------------------------- */
+
+.event-form {
+  display: grid;
+  gap: 1.15rem;
+  padding: clamp(1.1rem, 2.5vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper-raised);
+}
+
+.event-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.event-form__grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.event-form__grid .field + .field {
+  margin-top: 0;
+}
+
+.event-form__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.event-form__foot .hint {
+  max-width: 46ch;
+}
+
+/* Tables and filters ----------------------------------------------- */
+
+.admin-events .capacity {
+  min-width: 150px;
+}
+
+.filter-stack {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.filter-row__label {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.filter-stack .chip-row {
+  padding-block: 0;
+}
+
+/* Responsive ------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .admin-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .programme-row {
+    grid-template-columns: 52px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .programme-row__date {
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .programme-row__day {
+    font-size: 1.45rem;
+  }
+
+  .programme-row__fill {
+    grid-column: 2;
+    justify-items: start;
+    padding-top: 0.35rem;
+  }
+
+  .event-form__grid,
+  .event-form__grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .event-form__foot {
+    align-items: stretch;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+}

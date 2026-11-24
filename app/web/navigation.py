@@ -50,9 +50,31 @@ OPERATOR_NAV = (
     },
 )
 
+ADMIN_NAV = (
+    {
+        "label": "Overview",
+        "href": "/admin/dashboard",
+        "page": "dashboard",
+        "icon": "activity",
+    },
+    {
+        "label": "Events",
+        "href": "/admin/events",
+        "page": "events",
+        "icon": "calendar",
+    },
+    {
+        "label": "Registrations",
+        "href": "/admin/registrations",
+        "page": "registrations",
+        "icon": "users",
+    },
+)
+
 ROLE_NAV = {
     "participant": PARTICIPANT_NAV,
     "operator": OPERATOR_NAV,
+    "admin": ADMIN_NAV,
 }
 
 ROLE_LABELS = {
@@ -82,8 +104,8 @@ DEMO_ROLES = (
         "id": "admin",
         "label": ROLE_LABELS["admin"],
         "description": "Manage events and people",
-        "href": None,
-        "available": False,
+        "href": "/admin/dashboard",
+        "available": True,
     },
 )
 
